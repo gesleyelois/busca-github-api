@@ -17,7 +17,7 @@ class IGitHubRepository(ABC):
         data_fim: str,
         branch_base: str = "main",
         callback_progresso: Optional[Callable] = None
-    ) -> tuple[List[PullRequest], int]:
+    ) -> tuple[List[PullRequest], Optional[int]]:
         """
         Busca PRs mergeados por autor em um intervalo de datas.
         
@@ -30,7 +30,7 @@ class IGitHubRepository(ABC):
             callback_progresso: Função callback para atualizar progresso
             
         Returns:
-            Tupla (lista de Pull Requests encontrados, total de resultados)
+            Tupla (lista de Pull Requests encontrados, total de resultados ou None em caso de erro)
         """
         pass
     

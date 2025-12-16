@@ -35,7 +35,7 @@ def gerar_link_busca_github(
 def formatar_resultados(
     autor: str,
     prs: List[PullRequest],
-    total_resultados: int,
+    total_resultados: Optional[int],
     link_busca: str
 ) -> str:
     """
@@ -44,7 +44,7 @@ def formatar_resultados(
     Args:
         autor: Username do autor
         prs: Lista de PRs encontrados
-        total_resultados: Total de resultados encontrados
+        total_resultados: Total de resultados encontrados (pode ser None em caso de erro)
         link_busca: Link de busca no GitHub
         
     Returns:
@@ -53,8 +53,8 @@ def formatar_resultados(
     resultado = f"\n{autor}\n"
     resultado += "=" * 80 + "\n\n"
     
-    # Verifica se há resultados incompletos
-    if total_resultados > len(prs):
+    # Verifica se há resultados incompletos (só se total_resultados não for None)
+    if total_resultados is not None and total_resultados > len(prs):
         resultado += (
             f"Observação: a busca retornou {total_resultados} resultados no total, "
             f"a API trouxe {len(prs)}; os resultados estão incompletos. "
@@ -99,7 +99,7 @@ class BuscarPRsPorAutorUseCase:
         data_fim: str,
         branch_base: str = "main",
         callback_progresso: Optional[Callable] = None
-    ) -> tuple[List[PullRequest], int, str]:
+    ) -> tuple[List[PullRequest], Optional[int], str]:
         """
         Executa a busca de PRs por autor.
         
@@ -112,7 +112,7 @@ class BuscarPRsPorAutorUseCase:
             callback_progresso: Função callback para atualizar progresso
             
         Returns:
-            Tupla (lista de PRs, total de resultados, link de busca)
+            Tupla (lista de PRs, total de resultados ou None em caso de erro, link de busca)
         """
         prs, total_resultados = self.github_repository.buscar_prs_por_autor(
             repositorio=repositorio,

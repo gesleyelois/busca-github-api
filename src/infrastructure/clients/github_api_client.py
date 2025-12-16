@@ -64,7 +64,7 @@ class GitHubAPIClient(IGitHubRepository):
         data_fim: str,
         branch_base: str = "main",
         callback_progresso: Optional[Callable] = None
-    ) -> Tuple[List[PullRequest], int]:
+    ) -> Tuple[List[PullRequest], Optional[int]]:
         """
         Busca PRs mergeados por autor em um intervalo de datas.
         
@@ -77,7 +77,7 @@ class GitHubAPIClient(IGitHubRepository):
             callback_progresso: Função callback para atualizar progresso
             
         Returns:
-            Tupla (lista de Pull Requests encontrados, total de resultados)
+            Tupla (lista de Pull Requests encontrados, total de resultados ou None em caso de erro)
         """
         prs = []
         pagina = 1
