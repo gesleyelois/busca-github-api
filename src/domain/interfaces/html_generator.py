@@ -1,7 +1,8 @@
 """Interface para gerador de HTML."""
 
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import Dict, List
+from ..entities.pull_request import PullRequest
 
 
 class IHTMLGenerator(ABC):
@@ -15,5 +16,17 @@ class IHTMLGenerator(ABC):
     @abstractmethod
     def gerar_html(self, dados: Dict) -> str:
         """Gera HTML a partir dos dados parseados."""
+        pass
+    
+    @abstractmethod
+    def preparar_dados_para_html(
+        self,
+        repositorio: str,
+        periodo: str,
+        branch: str,
+        autores_prs: Dict[str, List[PullRequest]],
+        observacoes: List[str] = None
+    ) -> Dict:
+        """Prepara dados estruturados para geração de HTML a partir de PRs."""
         pass
 

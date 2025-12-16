@@ -53,7 +53,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
-      - name: Buscar PRs do time
+      - name: Buscar PRs do time e gerar HTML
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}
           REPOSITORIO: ${{ github.event.inputs.repositorio || 'caelum/springnarus' }}
@@ -70,22 +70,21 @@ jobs:
             echo "# felipesalmazo" >> config/autores.txt
           fi
           
+          # Cria diretório docs se não existir
+          mkdir -p docs
+          
+          # Gera HTML diretamente
           python busca_prs_time.py \
             --repositorio "$REPOSITORIO" \
             --data-inicio "$DATA_INICIO" \
             --data-fim "$DATA_FIM" \
             --branch-base "$BRANCH_BASE" \
-            --arquivo-saida resultado.txt || true
-      
-      - name: Gerar HTML
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          if [ -f resultado.txt ]; then
-            python gerar_html.py resultado.txt docs/index.html
-          else
-            echo "⚠️ Arquivo resultado.txt não encontrado. Criando página de exemplo."
-            mkdir -p docs
+            --gerar-html \
+            --arquivo-html docs/index.html || true
+          
+          # Se não gerou HTML, cria página de exemplo
+          if [ ! -f docs/index.html ]; then
+            echo "⚠️ HTML não foi gerado. Criando página de exemplo."
             cat > docs/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="pt-BR">

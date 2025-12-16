@@ -15,6 +15,7 @@ sys.path.insert(0, raiz_projeto)
 
 from src.infrastructure.clients.github_api_client import GitHubAPIClient
 from src.infrastructure.repositories.file_repository import FileRepository
+from src.infrastructure.repositories.html_generator import HTMLGenerator
 from src.application.use_cases.buscar_prs_time import BuscarPRsTimeUseCase
 
 # Carrega variáveis de ambiente
@@ -83,6 +84,17 @@ def main():
         "--arquivo-saida",
         help="Arquivo para salvar o resultado (padrão: resultado_time_<data>.txt)"
     )
+    parser.add_argument(
+        "--gerar-html",
+        action="store_true",
+        help="Gera HTML diretamente em vez de arquivo de texto"
+    )
+    parser.add_argument(
+        "--arquivo-html",
+        default="docs/index.html",
+        help="Caminho do arquivo HTML de saída (padrão: docs/index.html). "
+             "Só usado se --gerar-html for especificado."
+    )
     
     args = parser.parse_args()
     
@@ -90,7 +102,15 @@ def main():
     token = args.token or os.getenv("GITHUB_TOKEN")
     github_client = GitHubAPIClient(token=token)
     file_repository = FileRepository()
-    use_case = BuscarPRsTimeUseCase(github_client, file_repository)
+    
+    # Se for gerar HTML, inicializa o HTMLGenerator
+    html_generator = None
+    if args.gerar_html:
+        html_generator = HTMLGenerator()
+        # Garante que o diretório docs existe
+        os.makedirs(os.path.dirname(args.arquivo_html) if os.path.dirname(args.arquivo_html) else '.', exist_ok=True)
+    
+    use_case = BuscarPRsTimeUseCase(github_client, file_repository, html_generator)
     
     # Determina a lista de autores
     if args.autores:
@@ -136,29 +156,45 @@ def main():
     print()
     
     # Executa o caso de uso
-    resultado = use_case.executar(
-        repositorio=args.repositorio,
-        autores=autores,
-        data_inicio=args.data_inicio,
-        data_fim=args.data_fim,
-        branch_base=args.branch_base,
-        arquivo_saida=args.arquivo_saida,
-        callback_progresso=mostrar_progresso_autor
-    )
-    
-    if args.arquivo_saida:
-        print(f"✅ Resultado salvo em: {args.arquivo_saida}")
-        total_prs = resultado.count("  •")
-        print(f"📊 Total de PRs encontrados: {total_prs}")
+    if args.gerar_html:
+        # Gera HTML diretamente
+        sucesso = use_case.executar_e_gerar_html(
+            repositorio=args.repositorio,
+            autores=autores,
+            data_inicio=args.data_inicio,
+            data_fim=args.data_fim,
+            branch_base=args.branch_base,
+            arquivo_html=args.arquivo_html,
+            callback_progresso=mostrar_progresso_autor
+        )
+        if not sucesso:
+            print("❌ Erro ao gerar HTML")
+            sys.exit(1)
     else:
-        data_hoje = datetime.now().strftime("%Y%m%d")
-        arquivo_padrao = f"resultado_time_{data_hoje}.txt"
-        if file_repository.salvar(resultado, arquivo_padrao):
-            print(f"✅ Resultado salvo em: {arquivo_padrao}")
+        # Gera arquivo de texto
+        resultado = use_case.executar(
+            repositorio=args.repositorio,
+            autores=autores,
+            data_inicio=args.data_inicio,
+            data_fim=args.data_fim,
+            branch_base=args.branch_base,
+            arquivo_saida=args.arquivo_saida,
+            callback_progresso=mostrar_progresso_autor
+        )
+        
+        if args.arquivo_saida:
+            print(f"✅ Resultado salvo em: {args.arquivo_saida}")
             total_prs = resultado.count("  •")
             print(f"📊 Total de PRs encontrados: {total_prs}")
         else:
-            print(resultado)
+            data_hoje = datetime.now().strftime("%Y%m%d")
+            arquivo_padrao = f"resultado_time_{data_hoje}.txt"
+            if file_repository.salvar(resultado, arquivo_padrao):
+                print(f"✅ Resultado salvo em: {arquivo_padrao}")
+                total_prs = resultado.count("  •")
+                print(f"📊 Total de PRs encontrados: {total_prs}")
+            else:
+                print(resultado)
 
 
 if __name__ == "__main__":

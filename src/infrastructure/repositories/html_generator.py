@@ -2,7 +2,8 @@
 
 import re
 from html import escape
-from typing import Dict
+from typing import Dict, List
+from ...domain.entities.pull_request import PullRequest
 
 from ...domain.interfaces.html_generator import IHTMLGenerator
 
@@ -101,7 +102,7 @@ class HTMLGenerator(IHTMLGenerator):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise de Entregas do Time - Springnarus</title>
+    <title>Entregas do Time</title>
     <style>
         * {{
             margin: 0;
@@ -442,4 +443,71 @@ class HTMLGenerator(IHTMLGenerator):
 </html>'''
         
         return html
+    
+    def preparar_dados_para_html(
+        self,
+        repositorio: str,
+        periodo: str,
+        branch: str,
+        autores_prs: Dict[str, List[PullRequest]],
+        observacoes: List[str] = None
+    ) -> Dict:
+        """
+        Prepara dados estruturados para geração de HTML a partir de PRs.
+        
+        Args:
+            repositorio: Nome do repositório
+            periodo: Período da busca (ex: "2025-01-01 a 2025-12-31")
+            branch: Branch base
+            autores_prs: Dicionário com autor como chave e lista de PRs como valor
+            observacoes: Lista de observações (opcional)
+            
+        Returns:
+            Dicionário com dados estruturados para geração de HTML
+        """
+        if observacoes is None:
+            observacoes = [
+                "Usei a API do GitHub para buscar os PRs mergeados por autor nesse intervalo. "
+                "Alguns resultados da API estavam incompletos por limite de paginação "
+                "(o GitHub Search retorna no máximo 30 resultados por página). "
+                "Onde aplicou, marquei que os resultados estão incompletos e deixei o link de busca "
+                "no GitHub para ver o conjunto completo.",
+                "As respostas de busca trazem título do PR, link e data de merge e muitas vezes "
+                "o corpo/descrição do PR. Porém a listagem de busca não inclui sempre o nome da branch "
+                "nem todas as mensagens de commit. Posso buscar branch + commits para PRs específicos "
+                "caso queira — solicite quais PRs quer em detalhe.",
+                "Vou fornecer uma breve descrição (1–2 linhas) por PR usando o título e a descrição "
+                "encontrada no PR. Se quiser que eu extraia exatamente o nome da branch e todas as "
+                "mensagens de commit, peço que diga quais PRs priorizar (faço isso PR-a-PR)."
+            ]
+        
+        authors = {}
+        
+        for autor, prs in autores_prs.items():
+            prs_formatados = []
+            for pr in prs:
+                # Limpar a descrição
+                desc_clean = pr.descricao.strip()
+                if len(desc_clean) > 200:
+                    desc_clean = desc_clean[:200] + '...'
+                
+                prs_formatados.append({
+                    'title': pr.titulo,
+                    'url': pr.link,
+                    'date': pr.data_merge,
+                    'description': desc_clean
+                })
+            
+            authors[autor] = {
+                'count': len(prs),
+                'prs': prs_formatados
+            }
+        
+        return {
+            'repo': repositorio,
+            'periodo': periodo,
+            'branch': branch,
+            'observacoes': observacoes,
+            'authors': authors
+        }
 
