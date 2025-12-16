@@ -240,7 +240,7 @@ class GitHubAPIClient(IGitHubRepository):
     
     def _gerar_descricao_breve(self, titulo: str, corpo: str) -> str:
         """
-        Gera uma descrição breve (1-2 linhas) a partir do título e corpo.
+        Gera uma descrição breve (resumo inteligente) a partir do título e corpo.
         
         Args:
             titulo: Título do PR
@@ -249,15 +249,76 @@ class GitHubAPIClient(IGitHubRepository):
         Returns:
             Descrição breve
         """
-        # Remove markdown e quebras de linha excessivas
-        corpo_limpo = corpo.replace("\r\n", " ").replace("\n", " ")
+        import re
         
-        # Pega as primeiras 200 caracteres
-        if corpo_limpo:
-            descricao = corpo_limpo[:200].strip()
-            if len(corpo_limpo) > 200:
-                descricao += "..."
+        if not corpo or not corpo.strip():
+            return titulo
+        
+        # Tenta extrair a seção "Descrição do problema" primeiro
+        descricao_match = re.search(
+            r'##\s*Descrição\s+do\s+problema\s*\n\s*(.+?)(?=\n\s*##|\n\s*$|$)',
+            corpo,
+            re.IGNORECASE | re.DOTALL
+        )
+        
+        if descricao_match:
+            texto = descricao_match.group(1).strip()
         else:
+            # Se não encontrou, tenta "Solução proposta"
+            solucao_match = re.search(
+                r'##\s*Solução\s+proposta\s*\n\s*(.+?)(?=\n\s*##|\n\s*$|$)',
+                corpo,
+                re.IGNORECASE | re.DOTALL
+            )
+            if solucao_match:
+                texto = solucao_match.group(1).strip()
+            else:
+                # Se não encontrou seções, pega o primeiro parágrafo relevante
+                # Remove markdown headers, listas e links
+                texto = corpo
+        
+        # Remove elementos markdown desnecessários
+        # Remove imagens
+        texto = re.sub(r'!\[.*?\]\(.*?\)', '', texto)
+        # Remove links (mantém apenas o texto)
+        texto = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', texto)
+        # Remove código inline
+        texto = re.sub(r'`([^`]+)`', r'\1', texto)
+        # Remove blocos de código
+        texto = re.sub(r'```[\s\S]*?```', '', texto)
+        # Remove headers markdown
+        texto = re.sub(r'^#+\s+', '', texto, flags=re.MULTILINE)
+        # Remove listas markdown
+        texto = re.sub(r'^\s*[-*+]\s+', '', texto, flags=re.MULTILINE)
+        # Remove separadores
+        texto = re.sub(r'^---+$', '', texto, flags=re.MULTILINE)
+        
+        # Normaliza espaços e quebras de linha
+        texto = re.sub(r'\s+', ' ', texto)
+        texto = texto.strip()
+        
+        # Pega a primeira frase ou até 150 caracteres, respeitando palavras completas
+        if len(texto) <= 150:
+            descricao = texto
+        else:
+            # Tenta encontrar o final de uma frase próximo aos 150 caracteres
+            corte = 150
+            # Procura por ponto final, exclamação ou interrogação
+            match_ponto = re.search(r'[.!?]\s+', texto[:200])
+            if match_ponto:
+                corte = match_ponto.end()
+            else:
+                # Se não encontrou, corta na última palavra completa antes de 150
+                match_palavra = re.search(r'\s+', texto[120:150])
+                if match_palavra:
+                    corte = 120 + match_palavra.start()
+            
+            descricao = texto[:corte].strip()
+            if descricao and not descricao.endswith(('.', '!', '?')):
+                descricao += "..."
+        
+        # Se ainda não tem conteúdo útil, usa o título
+        if not descricao or len(descricao.strip()) < 10:
             descricao = titulo
         
         return descricao
