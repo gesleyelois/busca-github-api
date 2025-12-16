@@ -194,9 +194,11 @@ Este projeto está configurado para publicar automaticamente os resultados em HT
    - Em "Source", selecione "GitHub Actions"
 
 2. **Configure o token do GitHub (se necessário):**
-   - Vá em Settings → Secrets and variables → Actions
-   - Adicione um secret chamado `GITHUB_TOKEN` (ou use o token padrão do GitHub Actions)
-   - Para repositórios privados, você pode precisar criar um Personal Access Token com permissão `repo`
+   - O workflow usa automaticamente o token padrão do GitHub Actions (`secrets.GITHUB_TOKEN`)
+   - Para repositórios privados ou se precisar de mais permissões, você pode criar um Personal Access Token:
+     - Vá em Settings → Secrets and variables → Actions
+     - Adicione um secret chamado `GH_PERSONAL_TOKEN` (⚠️ não pode começar com `GITHUB_`)
+     - O workflow usará automaticamente se disponível, senão usa o token padrão
 
 ### Uso do GitHub Pages
 

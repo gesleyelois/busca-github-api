@@ -55,7 +55,7 @@ jobs:
       
       - name: Buscar PRs do time
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_TOKEN || secrets.GITHUB_TOKEN }}
           REPOSITORIO: ${{ github.event.inputs.repositorio || 'caelum/springnarus' }}
           DATA_INICIO: ${{ github.event.inputs.data_inicio || '2025-01-01' }}
           DATA_FIM: ${{ github.event.inputs.data_fim || '2025-12-31' }}
