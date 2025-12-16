@@ -22,6 +22,7 @@ resultado_time_*.txt
 
 # Scripts antigos (backup)
 *_old.py
+*_new.py
 
 # Mantém docs/ para GitHub Pages (não ignorar)
 # docs/index.html será gerado pelo workflow
