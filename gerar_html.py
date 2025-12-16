@@ -8,12 +8,13 @@ Refatorado para usar Clean Architecture.
 import sys
 import os
 
-# Adiciona src ao path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+# Adiciona o diretório raiz ao path para permitir imports relativos
+raiz_projeto = os.path.dirname(__file__)
+sys.path.insert(0, raiz_projeto)
 
-from infrastructure.repositories.file_repository import FileRepository
-from infrastructure.repositories.html_generator import HTMLGenerator
-from application.use_cases.gerar_html import GerarHTMLUseCase
+from src.infrastructure.repositories.file_repository import FileRepository
+from src.infrastructure.repositories.html_generator import HTMLGenerator
+from src.application.use_cases.gerar_html import GerarHTMLUseCase
 
 
 def main():

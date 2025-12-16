@@ -9,12 +9,13 @@ import sys
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Adiciona src ao path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
+# Adiciona o diretório raiz ao path para permitir imports relativos
+raiz_projeto = os.path.dirname(__file__)
+sys.path.insert(0, raiz_projeto)
 
-from infrastructure.clients.github_api_client import GitHubAPIClient
-from infrastructure.repositories.file_repository import FileRepository
-from application.use_cases.buscar_prs_time import BuscarPRsTimeUseCase
+from src.infrastructure.clients.github_api_client import GitHubAPIClient
+from src.infrastructure.repositories.file_repository import FileRepository
+from src.application.use_cases.buscar_prs_time import BuscarPRsTimeUseCase
 
 # Carrega variáveis de ambiente
 load_dotenv()

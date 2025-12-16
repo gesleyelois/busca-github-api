@@ -60,6 +60,7 @@ jobs:
           DATA_INICIO: ${{ github.event.inputs.data_inicio || '2025-01-01' }}
           DATA_FIM: ${{ github.event.inputs.data_fim || '2025-12-31' }}
           BRANCH_BASE: ${{ github.event.inputs.branch_base || 'main' }}
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           # Se não há config/autores.txt, cria um exemplo
           mkdir -p config
@@ -77,6 +78,8 @@ jobs:
             --arquivo-saida resultado.txt || true
       
       - name: Gerar HTML
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           if [ -f resultado.txt ]; then
             python gerar_html.py resultado.txt docs/index.html
@@ -111,7 +114,7 @@ jobs:
           </head>
           <body>
               <div class="container">
-                  <h1>📊 Análise de Entregas do Time</h1>
+                  <h1>📊 Entregas do Time</h1>
                   <p>Execute o workflow manualmente ou configure um schedule para gerar os dados.</p>
                   <p>Veja o README para mais informações.</p>
               </div>
