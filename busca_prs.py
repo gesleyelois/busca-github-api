@@ -296,19 +296,25 @@ def gerar_html(autores_prs: Dict[str, List[Dict]], repositorio: str, periodo: st
         }
 
         .pr-card {
-            background: #f8f9fa;
+            background: #ffffff;
             border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 16px;
+            padding: 24px;
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .pr-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.25);
             border-color: #667eea;
+            background: #f8f9ff;
         }
 
         .pr-card::before {
@@ -316,9 +322,9 @@ def gerar_html(autores_prs: Dict[str, List[Dict]], repositorio: str, periodo: st
             position: absolute;
             top: 0;
             left: 0;
-            width: 5px;
+            width: 6px;
             height: 100%;
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             transform: scaleY(0);
             transition: transform 0.3s ease;
         }
@@ -328,34 +334,59 @@ def gerar_html(autores_prs: Dict[str, List[Dict]], repositorio: str, periodo: st
         }
 
         .pr-title {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 12px;
-            line-height: 1.4;
+            font-size: 1.15em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 16px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pr-card:hover .pr-title {
+            color: #667eea;
+        }
+
+        .pr-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
         }
 
         .pr-link {
             color: #667eea;
             text-decoration: none;
             font-size: 0.9em;
-            display: inline-block;
-            margin-bottom: 10px;
-            word-break: break-all;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            pointer-events: none;
         }
 
-        .pr-link:hover {
-            text-decoration: underline;
+        .pr-card:hover .pr-link {
+            color: #764ba2;
         }
 
         .pr-date {
-            display: inline-block;
-            background: #667eea;
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
+            padding: 6px 14px;
+            border-radius: 20px;
             font-size: 0.85em;
-            margin-bottom: 10px;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        .pr-icon {
+            display: inline-block;
+            margin-right: 4px;
         }
 
         .pr-description {
@@ -462,11 +493,19 @@ def gerar_html(autores_prs: Dict[str, List[Dict]], repositorio: str, periodo: st
                 pr_num = pr["url"].split("/")[-1] if "/" in pr["url"] else ""
                 
                 html += f'''
-                <div class="pr-card">
+                <a href="{escape(pr["url"])}" class="pr-card" target="_blank" rel="noopener noreferrer">
                     <div class="pr-title">{escape(pr["titulo"])}</div>
-                    <a href="{escape(pr["url"])}" class="pr-link" target="_blank">#{pr_num}</a>
-                    <div class="pr-date">merged: {escape(pr["data_merge"])}</div>
-                </div>'''
+                    <div class="pr-meta">
+                        <span class="pr-link">
+                            <span class="pr-icon">🔗</span>
+                            #{pr_num}
+                        </span>
+                        <span class="pr-date">
+                            <span class="pr-icon">📅</span>
+                            merged: {escape(pr["data_merge"])}
+                        </span>
+                    </div>
+                </a>'''
             
             html += '''
             </div>'''
