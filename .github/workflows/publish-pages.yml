@@ -29,6 +29,7 @@ on:
     paths:
       - 'config/autores.txt'
       - '.github/workflows/publish-pages.yml'
+      - 'docs/index.html'
 
 jobs:
   build-and-deploy:
