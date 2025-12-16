@@ -1,0 +1,35 @@
+# Arquivo de ambiente com tokens sensíveis
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Arquivos de resultado temporários (gerados localmente)
+resultado.txt
+resultado.html
+resultado_*.txt
+resultado_time_*.txt
+
+# Scripts antigos (backup)
+*_old.py
+
+# Mantém docs/ para GitHub Pages (não ignorar)
+# docs/index.html será gerado pelo workflow
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
