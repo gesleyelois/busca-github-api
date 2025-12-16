@@ -1,0 +1,1936 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entregas do Time</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .info-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .info-item span {
+            font-size: 1.1em;
+        }
+
+        .observations {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .observations h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .observations ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .observations li {
+            padding: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .observations li:before {
+            content: "•";
+            color: #667eea;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            font-size: 1.5em;
+        }
+
+        .author-section {
+            padding: 40px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .author-section:last-child {
+            border-bottom: none;
+        }
+
+        .author-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .author-name {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .pr-count {
+            background: #667eea;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .prs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .pr-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pr-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .pr-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: #667eea;
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .pr-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .pr-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .pr-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 10px;
+            word-break: break-all;
+        }
+
+        .pr-link:hover {
+            text-decoration: underline;
+        }
+
+        .pr-date {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .pr-description {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+            margin-top: 10px;
+        }
+
+        .no-prs {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 30px;
+            background: #f8f9fa;
+            border-top: 3px solid #667eea;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .header-info {
+                grid-template-columns: 1fr;
+            }
+
+            .prs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .author-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Entregas do Time</h1>
+            <div class="header-info">
+                <div class="info-item">
+                    <strong>Repositório</strong>
+                    <span>caelum/springnarus</span>
+                </div>
+                <div class="info-item">
+                    <strong>Período</strong>
+                    <span>2025-01-01 a 2025-12-12</span>
+                </div>
+                <div class="info-item">
+                    <strong>Branch Base</strong>
+                    <span>main</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">Caio015</div>
+                <div class="pr-count">5 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">Filterable in search para false</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10060" class="pr-link" target="_blank">#10060</a>
+                    <div class="pr-date">merged: 2025-12-10</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Feat: Fix em migrations e add logo;</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10028" class="pr-link" target="_blank">#10028</a>
+                    <div class="pr-date">merged: 2025-12-08</div>
+                    <div class="pr-description">## Descrição do problema   Foi solicitada uma nova aba no site para abrigar os podcasts do hipsters ponto talks. Porém eles estavam sendo criados sob a tag do hipsters ponto tech, sendo necessaria a s...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Feat: Bloquear migração de Curso Imersivo e remover opção no dropdown.</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9926" class="pr-link" target="_blank">#9926</a>
+                    <div class="pr-date">merged: 2025-11-17</div>
+                    <div class="pr-description">**Card:** [ClickUp](https://app.clickup.com/t/86ad2w0k0).  ## Descrição do problema  Migração de cursos de imersão não estavam migrando corretamente.   ## Solução proposta  Bloquear migração de cursos...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Remover congelamento para cursos de imersao na api da FIAP</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9904" class="pr-link" target="_blank">#9904</a>
+                    <div class="pr-date">merged: 2025-11-10</div>
+                    <div class="pr-description">[Link do CARD](https://app.clickup.com/t/86a8eauvj)  ## Descrição do problema  Quando um aluno da FIAP tem uma assinatura Alura ela deve ser congelada, porem os cursos de imersao tambem estavam congel...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Fix: fix em css de botão de editar plano de estudos;</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9848" class="pr-link" target="_blank">#9848</a>
+                    <div class="pr-date">merged: 2025-10-29</div>
+                    <div class="pr-description">## Descrição do problema   Botão de Editar Plano de Estudos estava quebrado:   &lt;img width=&quot;299&quot; height=&quot;351&quot; alt=&quot;image&quot; src=&quot;https://github.com/user-attachments/assets/27c24470-222e-44e8-a36e-74be755...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">VictorAluraDev</div>
+                <div class="pr-count">48 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">[Motor de Recorrência Malga] Cria Acquirement usando a data do ciclo da Subscription</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9958" class="pr-link" target="_blank">#9958</a>
+                    <div class="pr-date">merged: 2025-12-10</div>
+                    <div class="pr-description">## Descrição do problema Precisamos criar os Acquirements com base na data do ciclo da Subscription, a data prevista para realizar a cobrança naquele ciclo, independentemente da data em que o pagament...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Implementa requisições paralelas para API do EBANX</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9953" class="pr-link" target="_blank">#9953</a>
+                    <div class="pr-date">merged: 2025-11-21</div>
+                    <div class="pr-description">## Descrição do problema Estamos com a [latência alta](https://discord.com/channels/699344837396267048/699345802841161852/1438582892581355573) no carrinho da Latam. Realizamos requisições sequenciais....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Manter a data original do ciclo de cobrança da assinatura</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9912" class="pr-link" target="_blank">#9912</a>
+                    <div class="pr-date">merged: 2025-11-24</div>
+                    <div class="pr-description">## Descrição do problema Atualmente criamos os Acquirements de produtos recorrentes baseados no `recurrenceAt` da `SubscriptionPayment`, mas esse campo muda quando o pagamento falha. Precisamos criar....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Ajusta query que manda os pagamento para fila</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9901" class="pr-link" target="_blank">#9901</a>
+                    <div class="pr-date">merged: 2025-11-04</div>
+                    <div class="pr-description">## Descrição do problema Foi identificado um alto volume de cobranças geradas pelo motor de recorrência, resultando em múltiplas cobranças para alguns alunos no mesmo dia. &lt;img width=&quot;722&quot; height=&quot;640...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">fix(reembolso): Trata installments null na serialização da charge</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9893" class="pr-link" target="_blank">#9893</a>
+                    <div class="pr-date">merged: 2025-11-04</div>
+                    <div class="pr-description">## Descrição do problema A Malga criar o objeto paymentMethod diferente quando é um pagamento realizado pela Nupay. E quando vamos serializar o objeto Charge não temos `installments` e acontece a segu...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Retira mensagem de renovação automática do checkout</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9852" class="pr-link" target="_blank">#9852</a>
+                    <div class="pr-date">merged: 2025-10-29</div>
+                    <div class="pr-description">## Descrição do problema Precisamos retirar a mensagem de renovação automática do carrinho ## Solução proposta  ## Como testar [Acesse](http://localhost:8085/compra/plus) ## Resultados **Antes** &lt;img....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Cancelar Subscription via ADMIN</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9827" class="pr-link" target="_blank">#9827</a>
+                    <div class="pr-date">merged: 2025-11-12</div>
+                    <div class="pr-description">## Descrição do problema O cancelamento da subscription via admin deve bloquear apenas as cobranças futuras e manter o Acquirement atual do aluno ativo e o acesso liberado até o final do período já pa...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Mostrar informações da Subscription Malga</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9780" class="pr-link" target="_blank">#9780</a>
+                    <div class="pr-date">merged: 2025-10-29</div>
+                    <div class="pr-description">## Descrição do problema Atualmente, o painel de informações da subscription não é exibido para alunos que possuem assinatura recorrente via motor de recorrência da Malga. É necessário exibir as infor...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Adiciona aviso de renovação automática no checkout</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9770" class="pr-link" target="_blank">#9770</a>
+                    <div class="pr-date">merged: 2025-10-15</div>
+                    <div class="pr-description">## Descrição do problema Precisamos incluir um aviso no checkout informando aos alunos que a renovação do plano é feita automaticamente ao final do período do plano contratado. ## Solução proposta - A...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Imersão] Permite alteração de status de Restrita para Encerrada</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9690" class="pr-link" target="_blank">#9690</a>
+                    <div class="pr-date">merged: 2025-09-22</div>
+                    <div class="pr-description">## Descrição do problema Ter a possibilidade no Admin alterar de status da Imersão  de Restrita para Encerrada ## Solução proposta - Adicionar CONCLUDED na lista getFlowPossibilities de RESTRICT ## Co...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Cria links personalizados de assinaturas por tipo de motor</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9590" class="pr-link" target="_blank">#9590</a>
+                    <div class="pr-date">merged: 2025-10-08</div>
+                    <div class="pr-description">## Descrição do problema Precisamos criar links personalizados de acordo com o motor de recorrência utilizado (interno ou da Malga). O time de SX compartilha esses links para que o aluno consiga criar...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Adiciona Cielo como provedor de pagamento</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9523" class="pr-link" target="_blank">#9523</a>
+                    <div class="pr-date">merged: 2025-08-20</div>
+                    <div class="pr-description">## Descrição do problema Vamos adicionar um novo provedor de pagamento [CIELO](https://docs.malga.io/documentations/providers/cielo) ## Solução proposta - Adicionar CIELO como provedor de pagamento vá...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Remove nanossegundos - MYSQL arredonda na query para 00:00:00.000000 do próximo dia</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9511" class="pr-link" target="_blank">#9511</a>
+                    <div class="pr-date">merged: 2025-08-18</div>
+                    <div class="pr-description">## Descrição do problema Na query que envia os SubscriptionPayment para a fila para realizar a cobrança, estamos utilizando um LocalDateTime com nanossegundos correspondentes ao último instante do dia...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Permite porcentagem null no produto</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9452" class="pr-link" target="_blank">#9452</a>
+                    <div class="pr-date">merged: 2025-08-06</div>
+                    <div class="pr-description">## Descrição do problema Permitir editar/criar o produto com a porcentagem null https://gnarus.sentry.io/issues/6790149019/?project=221835&amp;referrer=slack ## Solução proposta - Permitir que o `Percentu...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Renovação automática anual V0 - Job para recuperar cardId</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9372" class="pr-link" target="_blank">#9372</a>
+                    <div class="pr-date">merged: 2025-08-22</div>
+                    <div class="pr-description">## Descrição do problema Para processar a cobrança recorrente anual, é necessário manter os dados do cartão utilizado pelo aluno na compra. ## Solução proposta - Criar um Job de execução diária para r...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] - Renovação automática Anual - Salvar cardId Malga</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9351" class="pr-link" target="_blank">#9351</a>
+                    <div class="pr-date">merged: 2025-07-16</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Evitar NullPointer em PaymentProcesser</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9347" class="pr-link" target="_blank">#9347</a>
+                    <div class="pr-date">merged: 2025-07-16</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Revert &quot;adiciona logs no salvamento do cartão pós compra&quot;</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9340" class="pr-link" target="_blank">#9340</a>
+                    <div class="pr-date">merged: 2025-07-16</div>
+                    <div class="pr-description">Reverts caelum/springnarus#9338</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Revert &quot;Revert &quot;[Conversão] [Renovação Automática -v0] Salvar dados do cartão após compra&quot;&quot;</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9321" class="pr-link" target="_blank">#9321</a>
+                    <div class="pr-date">merged: 2025-07-10</div>
+                    <div class="pr-description">Reverts caelum/springnarus#9313  Quando realizamos um pagamento via PIX, recebemos um evento do Webhook (`authorized`), porém nesse fluxo não trabalhamos com PaymentSource.</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Revert &quot;[Conversão] [Renovação Automática -v0] Salvar dados do cartão após compra&quot;</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9313" class="pr-link" target="_blank">#9313</a>
+                    <div class="pr-date">merged: 2025-07-08</div>
+                    <div class="pr-description">Reverts caelum/springnarus#9290</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] [Renovação Automática -v0] Salvar dados do cartão após compra</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9290" class="pr-link" target="_blank">#9290</a>
+                    <div class="pr-date">merged: 2025-07-08</div>
+                    <div class="pr-description">## Descrição do problema Este PR dá o pontapé inicial na missão de renovação automática anual. Como primeiro passo, passamos a salvar as informações do cartão utilizado na compra, com o objetivo de po...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Alteração carrinho abandonado para turmas abertas</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9267" class="pr-link" target="_blank">#9267</a>
+                    <div class="pr-date">merged: 2025-06-26</div>
+                    <div class="pr-description">## Descrição do problema Precisamos alterar os links da mensagem do carrinho abandonado para produtos de turmas abertas. ## Solução proposta - Alterar links ## Como testar - [Crie um novo produto](htt...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] fix: adiciona o código do produto na url</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9266" class="pr-link" target="_blank">#9266</a>
+                    <div class="pr-date">merged: 2025-06-24</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Renovação automática altera porcentagem para 20%</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9255" class="pr-link" target="_blank">#9255</a>
+                    <div class="pr-date">merged: 2025-06-23</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Descongelamento Automático] Altera query para incluir datas passadas</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9177" class="pr-link" target="_blank">#9177</a>
+                    <div class="pr-date">merged: 2025-06-05</div>
+                    <div class="pr-description">## Descrição do problema O Job de descongelamento automático, processa apenas `FrozenAcquirement `com `unfreezeDate` do dia atual. Se ocorrer uma falha, os registros com unfreezeDate com datas no pass...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Motor de Recorrência] Alteração visual no checkout</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9136" class="pr-link" target="_blank">#9136</a>
+                    <div class="pr-date">merged: 2025-06-13</div>
+                    <div class="pr-description">## Descrição do problema Precisamos implementar melhorias visuais no checkout do motor de recorrência para tornar mais claro e compreensível aos alunos o funcionamento de cobrança da assinatura. ## So...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">NumberFormatException no webhook da Malga</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9124" class="pr-link" target="_blank">#9124</a>
+                    <div class="pr-date">merged: 2025-05-29</div>
+                    <div class="pr-description">## Descrição do problema Quando criamos um pagamento de forma manual, não é criado a orderId. Então é lançada a seguinte exception -&gt;  https://gnarus.sentry.io/issues/6152282176/?referrer=slack  ## So...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Log - Informa idempotencyKey quando MerchantId é diferente</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9091" class="pr-link" target="_blank">#9091</a>
+                    <div class="pr-date">merged: 2025-05-21</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adiciona log para analisar Exception no webhook da Malga</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9086" class="pr-link" target="_blank">#9086</a>
+                    <div class="pr-date">merged: 2025-05-20</div>
+                    <div class="pr-description">## Descrição do problema https://gnarus.sentry.io/issues/6152282176/?referrer=slack  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Verifica melhor cupom para aplicar no carrinho</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9065" class="pr-link" target="_blank">#9065</a>
+                    <div class="pr-date">merged: 2025-05-15</div>
+                    <div class="pr-description">## Descrição do problema Quando aplicado o cupom com maior desconto que o super cupom, o carrinho automaticamente trocava para o desconto do super cupom. ## Solução proposta - Validar qual é o melhor....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Adiciona banner Indica Dev</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9061" class="pr-link" target="_blank">#9061</a>
+                    <div class="pr-date">merged: 2025-05-15</div>
+                    <div class="pr-description">## Descrição do problema Precisamos de um novo banner do Indica Dev para a campanha de aniversário. ## Solução proposta - Adiciona o banner na Dashboard. ## Como testar - Crie ou ative um super [cupon...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Mostra os planos de 24 meses na aba renovação</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9052" class="pr-link" target="_blank">#9052</a>
+                    <div class="pr-date">merged: 2025-05-13</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ajuste copy e-mail de purchase</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8846" class="pr-link" target="_blank">#8846</a>
+                    <div class="pr-date">merged: 2025-03-20</div>
+                    <div class="pr-description">## Descrição do problema Precisamos ajustar o o copy do e-mail de purchase para compras de produtos recorrentes ## Solução proposta  ## Como testar Realize uma compra de um produto recorrente e verifi...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Múltiplas imersões</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8844" class="pr-link" target="_blank">#8844</a>
+                    <div class="pr-date">merged: 2025-05-05</div>
+                    <div class="pr-description">## Descrição do problema  Atualmente a plataforma não comporta mais de 1 imersão rodando ao mesmo tempo. Para conseguir maior conversão dos alunos, foi proposto que tivéssemos múltiplas imersões no me...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Motor de Recorrência] - Adiciona informação do plano contratado da Subscription</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8824" class="pr-link" target="_blank">#8824</a>
+                    <div class="pr-date">merged: 2025-03-13</div>
+                    <div class="pr-description">## Descrição do problema Precisamos enviar para o Hubspot o valor da propriedade `plano_contratado` no fluxo de compra da Subscription. ## Solução proposta - Adicionar valor para a propriedade `plano_...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adiciona import payment.error.js</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8795" class="pr-link" target="_blank">#8795</a>
+                    <div class="pr-date">merged: 2025-03-12</div>
+                    <div class="pr-description">## Descrição do problema Precisamos realizar o import ` payment.error.js` ## Solução proposta - Adiciona import payment.error.js ## Como testar  ## Resultados  ----------------------------  Se precisa...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Motor de Recorrência] Adiciona regra de tentativas de erros internos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8741" class="pr-link" target="_blank">#8741</a>
+                    <div class="pr-date">merged: 2025-03-12</div>
+                    <div class="pr-description">## Descrição do problema Precisamos adicionar uma regra de negócio para erros internos na cobrança de renovação de uma Subscription ## Solução proposta - Adicionar um limite máximo de tentativas para....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Motor de Recorrência] Integração com HubSpot</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8730" class="pr-link" target="_blank">#8730</a>
+                    <div class="pr-date">merged: 2025-03-12</div>
+                    <div class="pr-description">## Descrição do problema Precisamos integrar algumas informações dos produtos do motor de recorrência com o Hubspot.  Vamos criar três novas propriedades: `inicio_da_assinatura` , `final_da_assinatura...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Motor de recorrência] - Ajuste Job de cobrança</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8708" class="pr-link" target="_blank">#8708</a>
+                    <div class="pr-date">merged: 2025-02-21</div>
+                    <div class="pr-description">## Descrição do problema Precisamos realizar alguns ajustes no horário de execução do motor de recorrência, para incluir todas as subscriptions que tem a data de recorrência do dia. ## Solução propost...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Remove inativação do cartão</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8683" class="pr-link" target="_blank">#8683</a>
+                    <div class="pr-date">merged: 2025-02-17</div>
+                    <div class="pr-description">## Descrição do problema Diante dos diversos cancelamentos de Assinaturas por conta de inativações do cartão, achamos melhor não inativar o cartão do aluno(a) ao ocorrer erros &quot;não retentáveis&quot; para c...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">fix: obter subscription mais recente</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8639" class="pr-link" target="_blank">#8639</a>
+                    <div class="pr-date">merged: 2025-02-06</div>
+                    <div class="pr-description">## Descrição do problema Alguns alunos que tiveram sua Subscription cancelada e criaram uma nova, não estão conseguindo ter acesso  a página de informações da Subscription.  [Exception lançada](https:...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Cancelar Subscription ao expirar o Acquirement</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8626" class="pr-link" target="_blank">#8626</a>
+                    <div class="pr-date">merged: 2025-02-12</div>
+                    <div class="pr-description">## Descrição do problema Ao cancelar uma licença do recorrente, expiramos o acquirement via admin. Entretanto, temos casos onde o aluno está sendo cobrado da recorrência no mês seguinte, mesmo com seu...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Limpar caches no fluxo de liberação da Subscription</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8614" class="pr-link" target="_blank">#8614</a>
+                    <div class="pr-date">merged: 2025-02-04</div>
+                    <div class="pr-description">## Descrição do problema Alguns alunos, ao adquirirem algum plano do motor de recorrência, ficam temporariamente sem acesso a determinados conteúdos, devido os cache que utilizamos. ## Solução propost...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Filtrando Aquirement exiprados dos alerts de renovação</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8610" class="pr-link" target="_blank">#8610</a>
+                    <div class="pr-date">merged: 2025-02-11</div>
+                    <div class="pr-description">## Descrição do problema Alguns alunos estão ficando com alert de renovação de 30 dias nos planos de recorrência, quando possui Aquirements antigos expirados.   ## Solução proposta - Filtrar os Aquire...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Motor de Recorrência - adicionar link do Whatsap no e-mail de cancelamento</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8569" class="pr-link" target="_blank">#8569</a>
+                    <div class="pr-date">merged: 2025-02-10</div>
+                    <div class="pr-description">## Descrição do problema Adicionar no e-mail de cancelamento o link para o aluno entre em contato pelo WhatsApp ## Solução proposta - Adicionar o link do WhatsApp ## Como testar  Mude no properties: `...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Motor de Recorrência - Paginação e campo de busca na tela links assinatura</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8516" class="pr-link" target="_blank">#8516</a>
+                    <div class="pr-date">merged: 2025-02-10</div>
+                    <div class="pr-description">## Descrição do problema Com o passar do tempo teremos cada vez mais dados referente ao pagamento recorrente, e para isso vamos precisar fazer alguns ajustes no admin para facilitar consulta e navegab...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] MGM - Adiciona visualização para alunos sem indicações</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8493" class="pr-link" target="_blank">#8493</a>
+                    <div class="pr-date">merged: 2025-01-30</div>
+                    <div class="pr-description">## Descrição do problema No final da página do Indica Dev, precisamos exibir uma mensagem personalizada para os alunos que ainda não possuem nenhuma indicação, incentivando-os a participar. Para os al...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[MGM] Atualizar pontução pelo admin</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8401" class="pr-link" target="_blank">#8401</a>
+                    <div class="pr-date">merged: 2025-01-06</div>
+                    <div class="pr-description">## Descrição do problema Observamos que alguns usuários estão utilizando o cupom `indica-dev`, sem o indicador na URL, o que impede a correta contabilização da pontuação no Indica Dev. Precisamos de i...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">amandaallisalura</div>
+                <div class="pr-count">42 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">Revert &quot;Feat: Fix em migrations e add logo;&quot;</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10059" class="pr-link" target="_blank">#10059</a>
+                    <div class="pr-date">merged: 2025-12-08</div>
+                    <div class="pr-description">Reverts caelum/springnarus#10028</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado função para exceptions</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9829" class="pr-link" target="_blank">#9829</a>
+                    <div class="pr-date">merged: 2025-11-03</div>
+                    <div class="pr-description">## Descrição do problema O problema da falha na liberação automática do Paypal ocorreu novamente mesmo após a correção adicionada aqui https://github.com/caelum/springnarus/pull/9789 Após o report, vi...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adiciona validação para não contabilizar podcasts privados</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9822" class="pr-link" target="_blank">#9822</a>
+                    <div class="pr-date">merged: 2025-10-28</div>
+                    <div class="pr-description">## Descrição do problema Foi reportado via Teams que um usuário tinha feito todos os passos de uma formação, mas constava que ele tinha feito apenas 19 passos de 20. Investigando, vi que era devido a....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado tag canonical para forum</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9803" class="pr-link" target="_blank">#9803</a>
+                    <div class="pr-date">merged: 2025-10-23</div>
+                    <div class="pr-description">## Descrição do problema Nos foi relatado que as páginas do forum estão sem a tag canonical, que é importante para o rastreamento e indexação de paginas. ## Solução proposta Adicionado canonical para....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">fix problema de liberação do Paypal</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9789" class="pr-link" target="_blank">#9789</a>
+                    <div class="pr-date">merged: 2025-10-21</div>
+                    <div class="pr-description">## Descrição do problema Está ocorrendo um erro em algumas situações em que o pagamento é realizado via Paypal, mas a liberação não acontece.  ## Solução proposta Fazer com que o email do usuário que....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado campo de aviso no checkout de pagamento</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9752" class="pr-link" target="_blank">#9752</a>
+                    <div class="pr-date">merged: 2025-10-14</div>
+                    <div class="pr-description">## Descrição do problema Está ocorrendo uma promoção que ao comprar o plano de 1 ano na alura latam e na alurona, o usuário ganha 2 meses de brinde. Porém, não está tão claro para o usuário. ## Soluçã...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado acquirement como free para o ProBonus</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9742" class="pr-link" target="_blank">#9742</a>
+                    <div class="pr-date">merged: 2025-10-07</div>
+                    <div class="pr-description">## Descrição do problema Foi identificado um problema na geração do acquirement bonus: ao gerar o bônus para usuários que compram um curso imersivo e já possuem um plano Plus recorrente, o sistema est...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado logo da fiap no certificado de cursos imersivos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9709" class="pr-link" target="_blank">#9709</a>
+                    <div class="pr-date">merged: 2025-10-06</div>
+                    <div class="pr-description">## Descrição do problema Foi solicitado a adição da logo da fiap no certificado dos cursos imersivos ## Solução proposta Foi solicitado a adição da logo da fiap no certificado dos cursos imersivos ##....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado tratamento para url undefined</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9676" class="pr-link" target="_blank">#9676</a>
+                    <div class="pr-date">merged: 2025-09-18</div>
+                    <div class="pr-description">## Descrição do problema Estava acontecendo exceptions em que estava sendo enviado undefined na url e lançava o erro porque precisa do envio de um long.   erro no sentry: https://gnarus.sentry.io/issu...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado novas propriedades no hubspot</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9654" class="pr-link" target="_blank">#9654</a>
+                    <div class="pr-date">merged: 2025-10-06</div>
+                    <div class="pr-description">## Descrição do problema Foi solicitado a adição de 2 novas propriedades no hubspot que serão usadas para envio de mensagens no whatsapp, quando temos problemas com o pagamento de usuários. Elas são e...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">ajuste teste unitario</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9639" class="pr-link" target="_blank">#9639</a>
+                    <div class="pr-date">merged: 2025-09-10</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Alterado palavra de assine para &quot;matricule-se no plano&quot; no card de renovação</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9632" class="pr-link" target="_blank">#9632</a>
+                    <div class="pr-date">merged: 2025-09-09</div>
+                    <div class="pr-description">## Descrição do problema  Foi solicitado a alteração da palavra de assine para &quot;matricule-se no plano&quot; no card de renovação &lt;img width=&quot;1154&quot; height=&quot;595&quot; alt=&quot;Captura de tela de 2025-09-09 11-07-47&quot;....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[ALURA LATAM] Habilitado Argentina no carrinho de compras do ebanx</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9593" class="pr-link" target="_blank">#9593</a>
+                    <div class="pr-date">merged: 2025-09-04</div>
+                    <div class="pr-description">## Descrição do problema Foi solicitado a habilitação do País Argentina no carrinho de compras do ebanx ## Solução proposta  ## Como testar Rodar o projeto com a env da latam e entrar no carrinho de c...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado correção para erro no carrinho</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9566" class="pr-link" target="_blank">#9566</a>
+                    <div class="pr-date">merged: 2025-08-29</div>
+                    <div class="pr-description">## Descrição do problema Ao acessar os carrinhos da alura latam, alura lingua e alura bootcamp estava ocorrendo um erro.  ## Solução proposta O problema era o nome na chamada do método da função espec...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado validacao para itens com link</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9562" class="pr-link" target="_blank">#9562</a>
+                    <div class="pr-date">merged: 2025-08-29</div>
+                    <div class="pr-description">## Descrição do problema Estava ocorrendo vários erros ao tentar executar o NerdTech ao rodar o job de updateFeed. Vou verificado, e percebemos que o erro estava ocorrendo porque não estava sendo envi...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado acquirement free para cursos imersivos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9553" class="pr-link" target="_blank">#9553</a>
+                    <div class="pr-date">merged: 2025-08-28</div>
+                    <div class="pr-description">## Descrição do problema A ideia do Pr: https://github.com/caelum/springnarus/pull/9495 foi alterar o período de uso da alurona para 3 meses para quem comprar um curso imersivo de longa duração. Para....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado mensageria para envio de itens para o hubspot</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9534" class="pr-link" target="_blank">#9534</a>
+                    <div class="pr-date">merged: 2025-09-10</div>
+                    <div class="pr-description">## Descrição do problema Anteriormente os Jobs do carrinho abandonado e de novas compras rodavam apenas uma vez ao dia, e eram referentes ao dia anterior, o que dificultava uma visualização melhor sob...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado cortesia alura lingua para ultra lab</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9505" class="pr-link" target="_blank">#9505</a>
+                    <div class="pr-date">merged: 2025-08-14</div>
+                    <div class="pr-description">## Descrição do problema Não estava aparecendo a mensagem de &quot;Acesso para Alura Língua? Só se cadastrar [clicando aqui](https://cursos.aluralingua.com.br/access/create/8DE0_B2_oT2_tjdS8gaYLlgoJUmUJ9-l...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Alterado regra de liberação a Alura ao comprar os cursos imersivos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9495" class="pr-link" target="_blank">#9495</a>
+                    <div class="pr-date">merged: 2025-08-25</div>
+                    <div class="pr-description">## Descrição do problema No jeito que está atualmente TODOS os cursos imersivos estão congelando as compras antigas e gerando novo acesso para 6 meses da plataforma.  Foi solicitado: - Apenas cursos i...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Alura Língua] - fix Contagem de atividades pendentes</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9478" class="pr-link" target="_blank">#9478</a>
+                    <div class="pr-date">merged: 2025-08-08</div>
+                    <div class="pr-description">## Descrição do problema Foi identificado um erro na contagem das atividades &quot;Práticas de hoje&quot; no Alura Língua. A dashboard indicava que o usuário possuía tarefas pendentes, porém, ao acessá-las, nen...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado possibilidade para alunos downgrade emitir certificado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9443" class="pr-link" target="_blank">#9443</a>
+                    <div class="pr-date">merged: 2025-08-01</div>
+                    <div class="pr-description">## Descrição do problema Foi solicitado para que alunos downgrade possam emitir o certificado dos cursos externos ## Solução proposta Adicionado possibilidade para alunos downgrade emitir certificado....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado nova feature e advantages para alura es</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9422" class="pr-link" target="_blank">#9422</a>
+                    <div class="pr-date">merged: 2025-07-29</div>
+                    <div class="pr-description">## Descrição do problema  Foi solicitado pelo pessoal da latam a adição de novas vantagens nos planos pro e plus.  Plan Plus - 357 cursos - Acceso a TODOS los cursos por 1 año - Certificado de partici...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado correção geração de certificados de formação composta por outras formações</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9364" class="pr-link" target="_blank">#9364</a>
+                    <div class="pr-date">merged: 2025-07-23</div>
+                    <div class="pr-description">## Descrição do problema Nos foi relatado um problema na Oracle One sobre geração de certificado de uma formação composta por outras formações. O real problema é que no momento de montar o objeto espe...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado Geração de certificado para cursos imersivos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9293" class="pr-link" target="_blank">#9293</a>
+                    <div class="pr-date">merged: 2025-07-28</div>
+                    <div class="pr-description">## Descrição do problema   Atualmente na plataforma não existe uma forma de gerar certificados para os cursos imersivos. ## Solução proposta  - Adicionado geração do certificado para os cursos imersiv...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado sincronização com hubspot no downgrade e upgrade</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9263" class="pr-link" target="_blank">#9263</a>
+                    <div class="pr-date">merged: 2025-06-26</div>
+                    <div class="pr-description">## Descrição do problema Adicionado sincronização de informações de upgrade e downgrade com hubspot ## Solução proposta Ao fazer o upgrade ou o downgrade em um plano, deve refletir no hubspot ## Como....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado atualização de propriedades hubspot ao atualizar informações no admin</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9233" class="pr-link" target="_blank">#9233</a>
+                    <div class="pr-date">merged: 2025-06-24</div>
+                    <div class="pr-description">## Descrição do problema  Ao realizar alterações no cadastro do aluno, realizados pelo ADM não estão sendo refletidos no hubspot. ## Solução proposta Fazer com que ao atualizar informações pessoais e....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adiciona tratamento de preenchimento para ceps gerais</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9202" class="pr-link" target="_blank">#9202</a>
+                    <div class="pr-date">merged: 2025-06-10</div>
+                    <div class="pr-description">## Descrição do problema Foi relatado que no cadastro de endereços com CEP gerais (que é o mesmo cep pra cidade toda) estava ocorrendo um erro, pois ele procurava o logadouro e o bairro e não encontra...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado vantagem para cursos imersivos de curta duração</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9196" class="pr-link" target="_blank">#9196</a>
+                    <div class="pr-date">merged: 2025-06-16</div>
+                    <div class="pr-description">## Descrição do problema Nos cursos imersivos de curta duração é necessário manter apenas 4 vantagens.  ## Solução proposta Adicionado opção de &quot;vantagens para imersivos de curta duração&quot; para aprecer...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado validação de CEP e não permissão para alteração de estado e cidade</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9140" class="pr-link" target="_blank">#9140</a>
+                    <div class="pr-date">merged: 2025-06-04</div>
+                    <div class="pr-description">## Descrição do problema  Foi relatado que em algumas compras, o Estado preenchido no formulário para geração de NFe estava errado. Realizei alguns testes e identifiquei que ao selecionar um país e es...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado turnstile reset</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9131" class="pr-link" target="_blank">#9131</a>
+                    <div class="pr-date">merged: 2025-06-09</div>
+                    <div class="pr-description">## Descrição do problema Quando estamos no carrinho com a feature do Turnstile (TURNSTILE_CART) ativada, ao trocar o meio de pagamento ocorre um erro na requisição, pois o Turnstile deixa de ser válid...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado novas propriedades para o envio no hubspot</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9096" class="pr-link" target="_blank">#9096</a>
+                    <div class="pr-date">merged: 2025-05-29</div>
+                    <div class="pr-description">## Descrição do problema Não estamos enviando para o Hubspot no job de carrinho abandonado informações do curso imersivo que o usuário está tentando compra.  Se o produto for de cursos imersivos, envi...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Fix - Visibilidade do botão de welcome</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9095" class="pr-link" target="_blank">#9095</a>
+                    <div class="pr-date">merged: 2025-05-22</div>
+                    <div class="pr-description">## Descrição do problema  Na tela de onboarding: http://localhost:8085/onboarding/welcome, quando existia vídeo vimeo, era renderizado uma função que fazia controle de uma animação para mostrar o botã...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">removido invisibilidade do botão próximos passos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9088" class="pr-link" target="_blank">#9088</a>
+                    <div class="pr-date">merged: 2025-05-20</div>
+                    <div class="pr-description">## Descrição do problema  Foi relatado um problema que os novos usuários não estavam conseguindo sair da pagina de /onboarding/welcome após assistir o vídeo incial, pois anteriormente era um tipo víde...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Alterado vídeo de reprodução do onboarding</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9068" class="pr-link" target="_blank">#9068</a>
+                    <div class="pr-date">merged: 2025-05-20</div>
+                    <div class="pr-description">## Descrição do problema  Foi solicitado a alteração do vídeo de onboarding para https://youtu.be/7QLmjEPEwR4  ## Solução proposta  Adicionado vídeo  ## Como testar  1 - selecione um usuário novo e fa...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Removido nome chumbado no envio de notificação</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9049" class="pr-link" target="_blank">#9049</a>
+                    <div class="pr-date">merged: 2025-05-13</div>
+                    <div class="pr-description">## Descrição do problema Foi identificado que o e-mail de abandono do carrinho do aniversário Alura estava chumbado o nome de &quot;Thamires&quot;, e que deveria ser do representante comercial:   ![image](https...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Corrige Exceção de senha no trial.ftl</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9018" class="pr-link" target="_blank">#9018</a>
+                    <div class="pr-date">merged: 2025-05-08</div>
+                    <div class="pr-description">## Descrição do problema Após investigação, percebi que isso ocorre especificamente em casos de contas &quot;pré-criadas&quot; na Alura, onde o usuário não chegou a definir uma senha.  O problema aparece quando...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado nova mensagem para carrinho abandonado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9014" class="pr-link" target="_blank">#9014</a>
+                    <div class="pr-date">merged: 2025-05-08</div>
+                    <div class="pr-description">## Descrição do problema Foi solicitado a alteração do corpo do texto do e-mail enviado para as pessoas que iniciam uma compra e abandonam o carrinho de compras.  ## Solução proposta Adicionado a mens...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado banner fórum de usuários deslogados para imersão Ia alura</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8968" class="pr-link" target="_blank">#8968</a>
+                    <div class="pr-date">merged: 2025-04-23</div>
+                    <div class="pr-description">## Descrição do problema  Houve a necessidade de subir um novo banner do fórum de usuários deslogados sobre a imersão IA com o Gemini  ## Solução proposta  Adicionado um novo banner para o fórum de de...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado imagem de nova imersao</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8952" class="pr-link" target="_blank">#8952</a>
+                    <div class="pr-date">merged: 2025-04-16</div>
+                    <div class="pr-description">## Descrição do problema Era necessário adicionar uma nova imagem para um banner de nova imersão  ## Solução proposta Adicionado nova imagem para configuração no admin  ----------------------------  S...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado verificação se a propriedade é de um curso imersivo</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8949" class="pr-link" target="_blank">#8949</a>
+                    <div class="pr-date">merged: 2025-05-05</div>
+                    <div class="pr-description">## Descrição do problema  Identificamos que alunos ATIVOS e EXPIRADOS do plano PLUS, quando logam na plataforma, no menu MINHA MATRÍCULA veem benefícios de cursos imersivos dentro da lista de benefíci...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Resolvido problema de paginação na listagem meus cursos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8942" class="pr-link" target="_blank">#8942</a>
+                    <div class="pr-date">merged: 2025-04-14</div>
+                    <div class="pr-description">## Descrição do problema  Ao utilizar os filtros (Todos, Concluídos, Não Concluídos), caso não tenha cursos o suficiente para preencher até a paginação selecionada no momento da filtragem, ele exibe c...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionado customização Link do Discord para Oracle</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8924" class="pr-link" target="_blank">#8924</a>
+                    <div class="pr-date">merged: 2025-04-24</div>
+                    <div class="pr-description">## Descrição do problema  Ao querer adicionar um link do discord personalizado, hoje é necessário criar uma migração para a realização da inserção.  ## Solução proposta  Adicionado funcionalidade para...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">eduardofettermann</div>
+                <div class="pr-count">31 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">Corrige link copies carrinho abandonado LATAM</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10020" class="pr-link" target="_blank">#10020</a>
+                    <div class="pr-date">merged: 2025-12-01</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black November] Corrige detalhes do contador</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9988" class="pr-link" target="_blank">#9988</a>
+                    <div class="pr-date">merged: 2025-11-25</div>
+                    <div class="pr-description">## Descrição do problema Estamos com duas questões: - Porcentagem &quot;50%&quot; de desconto no contador quando deveria ser &quot;55%&quot; pra users de renovação - Cta que redireciona pra &quot;Minha matrícula&quot; exibido para...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black November] Minha matrícula planos de 3 anos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9939" class="pr-link" target="_blank">#9939</a>
+                    <div class="pr-date">merged: 2025-11-24</div>
+                    <div class="pr-description">## Descrição do problema O plano B da Black November é oferecermos planos de 3 anos, precisamos estar preparados para implementar isso  ## Solução proposta Adicionar switch, planos de 3 anos e lógica....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Remove Campanha de dois meses gratis</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9938" class="pr-link" target="_blank">#9938</a>
+                    <div class="pr-date">merged: 2025-12-01</div>
+                    <div class="pr-description">## Descrição do problema Devemos remover as alterações da campanha de 2 meses grátis, principalmente a lógica de exibir o banner da campanha caso não caia nas verificações  do [renewBannersDash.tag](h...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black November] Troca &quot;oferta&quot; pelo maior percentual de desconto</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9930" class="pr-link" target="_blank">#9930</a>
+                    <div class="pr-date">merged: 2025-11-12</div>
+                    <div class="pr-description">## Descrição do problema Devemos adicionar a porcentagem de desconto nas etiquetas vermelhas dos planos no switch e nos planos na tela de minha matrícula  ## Solução proposta Trocar as etiquetas verme...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black november] Adiciona banner indica dev</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9871" class="pr-link" target="_blank">#9871</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema Precisamos adicionar o banner de indica-dev na dashboard durante a black friday para alunos que não estão em período de renovação  ## Solução proposta Exibir o banner caso o a...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black November] Adiciona destaque vantagens Talent Lab</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9870" class="pr-link" target="_blank">#9870</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema Devemos destacar os benefícios do Talent lab  ## Solução proposta Adicionar estilização css no checkout e minha matrícula  ## Como testar 1. [Ative a feature do Super Cupom de...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black november] Copies carrinho abandonado Latam</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9861" class="pr-link" target="_blank">#9861</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema Devemos atualizar as copies de carrinho abandonado na LATAM  ## Solução proposta Atualizar copies  ## Como testar 1. Habilite a feature SUPER_COUPON 2. Habilite a feature SUPE...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black november] Banner fórum deslogado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9854" class="pr-link" target="_blank">#9854</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema Devemos adicionar um banner no fórum deslogado da Black november  ## Solução proposta Adicionar o banner no fórum deslogado  ## Como testar 1. Ative a feature SHOW_CTA_ITEMS_O...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black november] Troca cor de ctas e atualiza contador</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9850" class="pr-link" target="_blank">#9850</a>
+                    <div class="pr-date">merged: 2025-10-30</div>
+                    <div class="pr-description">## Descrição do problema Foi atualizado o design do cta e do contador  ## Solução proposta Realizar as alterações conforme [o figma ](https://www.figma.com/design/QXuZQO0nrkiiWYiVHsmO5b/Black-Friday-2...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black november] Corrige parcelas de planos sem desconto</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9845" class="pr-link" target="_blank">#9845</a>
+                    <div class="pr-date">merged: 2025-10-29</div>
+                    <div class="pr-description">## Descrição do problema Não estamos exibindo as casas decimais das parcelas dos planos sem desconto na página &quot;Minha matrícula&quot; conforme a imagem abaixo:  &lt;img width=&quot;1155&quot; height=&quot;557&quot; alt=&quot;image&quot; s...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black November] Ajustes Minha matrícula e banners para não mostrar 55% de desconto</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9837" class="pr-link" target="_blank">#9837</a>
+                    <div class="pr-date">merged: 2025-10-27</div>
+                    <div class="pr-description">## Descrição do problema Precisamos parar de exibir que temos 55% de desconto na pré black november, pois estamos com o preço dos produtos da campanha de 2 meses que acaba não sendo 55% de desconto, e...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Pre black november minha matricula</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9835" class="pr-link" target="_blank">#9835</a>
+                    <div class="pr-date">merged: 2025-10-27</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black November] Atualiza página do Indica Dev</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9793" class="pr-link" target="_blank">#9793</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema Precisamos atualizar a página do IndicaDev conforme o [protótipo do Figma](https://www.figma.com/design/QXuZQO0nrkiiWYiVHsmO5b/Black-Friday-2025?node-id=1577-27894&amp;p=f&amp;t=EzSAg...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">adiciona linha em branco pra resolver deploy</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9733" class="pr-link" target="_blank">#9733</a>
+                    <div class="pr-date">merged: 2025-10-03</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Adiciona banner de desconto de + 2 meses grátis</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9726" class="pr-link" target="_blank">#9726</a>
+                    <div class="pr-date">merged: 2025-10-02</div>
+                    <div class="pr-description">## Descrição do problema Precisamos adicionar um banner de CTA na dashboard, fórum logado e deslogado e aba de minha matrícula para promoção que dará acesso a mais dois meses extras gratuitos.  ## Sol...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Adiciona merchant id para subscriptions</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9641" class="pr-link" target="_blank">#9641</a>
+                    <div class="pr-date">merged: 2025-09-12</div>
+                    <div class="pr-description">## Descrição do problema Precisamos criar um merchantId para as assinaturas recorrentes  ## Solução proposta Criar um campo novo na feature PLUG_PAGAMENTOS para adicionar merchantId de subscriptions (...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Exceptions] Corrige Type not defined na criação de sugestão de alterações</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9637" class="pr-link" target="_blank">#9637</a>
+                    <div class="pr-date">merged: 2025-09-16</div>
+                    <div class="pr-description">## Descrição do problema Ao tentarmos criar uma sugestão de alterações do tipo &quot;Correção ortográfica&quot;, com a descrição vazia obtemos a exception illegalStateException  ## Solução proposta Verificar se...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Vitrine Dev] Corrige NumberFormatException</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9607" class="pr-link" target="_blank">#9607</a>
+                    <div class="pr-date">merged: 2025-09-11</div>
+                    <div class="pr-description">## Descrição do problema Estamos frequentemente lançando a exception &quot;NumberFormatException&quot;, pois alguns projetos que tem links nas descrições com redirecionamento para Readme.md, que em vez de redir...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Corrige desconto ga4</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9546" class="pr-link" target="_blank">#9546</a>
+                    <div class="pr-date">merged: 2025-08-28</div>
+                    <div class="pr-description">## Descrição do problema Estamos enviando pro GA4 a porcentagem de desconto em vez do valor economizado pelo aluno ao utilizar os cupons.  ## Solução proposta Substituir o percentual de desconto pelo....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Corrige concorrencia ao fechar banner</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9519" class="pr-link" target="_blank">#9519</a>
+                    <div class="pr-date">merged: 2025-08-28</div>
+                    <div class="pr-description">## Descrição do problema Estamos lançando frequentemente a SQLIntegrityConstraintViolationException com a mensagem &quot;Duplicate entry &#x27;NEW_CONTENT_RECOMMENDATION_BANNER-4139550&#x27; for key &#x27;UserMessagePref...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adiciona banner ultra lab lancamento</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9462" class="pr-link" target="_blank">#9462</a>
+                    <div class="pr-date">merged: 2025-08-11</div>
+                    <div class="pr-description">## Descrição do problema Precisamos adicionar o banner de lançamento do plano Ultra Lab na dashboard, fórum e fórum para quem estiver deslogado  ## Solução proposta Adicionar o banner em todas telas n...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Oculta banner da campanha dos planos de 24 meses para B2B</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9447" class="pr-link" target="_blank">#9447</a>
+                    <div class="pr-date">merged: 2025-08-01</div>
+                    <div class="pr-description">## Descrição do problema Estamos exibindo o banner da campanha para alunos B2B  ## Solução proposta Não exibir no fórum e dashboard o banner caso o aluno não seja B2C  ## Como testar Logue como um Use...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Banner campanha 24 meses fórum deslogado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9392" class="pr-link" target="_blank">#9392</a>
+                    <div class="pr-date">merged: 2025-07-29</div>
+                    <div class="pr-description">## Descrição do problema Precisamos trocar o banner de quando não estamos logado para o da campanha dos planos de 24 meses  ## Solução proposta Adicionar o banner de 24 meses e habilitar nas features....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">refactor: verifica cupons nulos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9377" class="pr-link" target="_blank">#9377</a>
+                    <div class="pr-date">merged: 2025-07-21</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Super cupom alura 24 meses renovacao</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9376" class="pr-link" target="_blank">#9376</a>
+                    <div class="pr-date">merged: 2025-07-21</div>
+                    <div class="pr-description">## Descrição do problema Ao tentar remover o supercupom não estava sendo possível inserir um cupom de influenciadores  ## Solução proposta Permitir a remoção de supercupom quando estivesse inserido  #...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Super cupom alura 24 meses renovacao</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9365" class="pr-link" target="_blank">#9365</a>
+                    <div class="pr-date">merged: 2025-07-21</div>
+                    <div class="pr-description">## Descrição do problema Precisamos ter os planos de 24 meses com  30% de desconto na renovação para novos alunos  ## Solução proposta - Criar dois supercupons, um para renovação e um para novos aluno...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Resolve data do pagamento de licença no futuro</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9334" class="pr-link" target="_blank">#9334</a>
+                    <div class="pr-date">merged: 2025-07-15</div>
+                    <div class="pr-description">## Descrição do problema Estamos com alguns casos em que liberamos o acesso de forma manual, e a data do pagamento está indo de forma automática com data do fim do plano, e não a data da compra/libera...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Altera data de criacão acquirement na renovacao da recorrência</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9307" class="pr-link" target="_blank">#9307</a>
+                    <div class="pr-date">merged: 2025-07-30</div>
+                    <div class="pr-description">## Descrição do problema Na recorrência, quando um aluno estivesse no último dia do período de inadimplência e fosse feito a cobrança com sucesso ele conseguiria acesso apenas as 14:00 mesmo que a cob...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Atualiza a releaseDate para o ano de 3000 e visibilidade para privado da imersão teste</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9277" class="pr-link" target="_blank">#9277</a>
+                    <div class="pr-date">merged: 2025-06-30</div>
+                    <div class="pr-description">## Descrição do problema As imersões privadas que tem releaseDate menor ou igual ao Date atual são atualizadas para públicas através de uma rotina, assim fazendo com que a imersão criada de forma não....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Criação endpoint que traga todas as imersões ativas e inativas</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9272" class="pr-link" target="_blank">#9272</a>
+                    <div class="pr-date">merged: 2025-06-26</div>
+                    <div class="pr-description">## Descrição do problema Precisamos criar um endpoint que traga todas as imersões para utilizarmos em um sitemap das imersões.  ## Solução proposta - Adicionar um método na ImmersionRepository que bus...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">felipesalmazo</div>
+                <div class="pr-count">48 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">Manda url do video de onboarding para as tags e substitui o método</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10035" class="pr-link" target="_blank">#10035</a>
+                    <div class="pr-date">merged: 2025-12-02</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Retira tag antiga de banners na dash da latam</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10025" class="pr-link" target="_blank">#10025</a>
+                    <div class="pr-date">merged: 2025-12-01</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionando contador da Cyber Monday e Dynamic Banner na Latam</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10001" class="pr-link" target="_blank">#10001</a>
+                    <div class="pr-date">merged: 2025-11-28</div>
+                    <div class="pr-description">## Descrição do problema Precisamos adicionar o contador na alurona e os banners dinamicos na latam  ## Solução proposta Adiconar contador e banners dinâmicos  ## Como testar Para testar o contador: I...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionando a info do plano de 3 anos no email de carrinho abandonado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9992" class="pr-link" target="_blank">#9992</a>
+                    <div class="pr-date">merged: 2025-11-25</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionando o valor cart_id no checkout_error</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9905" class="pr-link" target="_blank">#9905</a>
+                    <div class="pr-date">merged: 2025-11-06</div>
+                    <div class="pr-description">## Descrição do problema Precisamos ter mais rastreabilidade no evento de checkout error para investigações ## Solução proposta Adicionar o cart_id no evento ## Como testar - Na classe GoogleTagManage...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ajusta banner indica dev e copys</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9887" class="pr-link" target="_blank">#9887</a>
+                    <div class="pr-date">merged: 2025-11-03</div>
+                    <div class="pr-description">## Descrição do problema arrumar banner indica dev e adicionar o link do whatsapp no copy dos emails  ## Solução proposta  ## Como testar  ## Resultados banner &lt;img width=&quot;963&quot; height=&quot;152&quot; alt=&quot;image...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Fix: cores mgm e banner da dashboard</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9882" class="pr-link" target="_blank">#9882</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Black november all prs</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9881" class="pr-link" target="_blank">#9881</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Black November] Adiciona banner de renovação na dashboard da Latam</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9880" class="pr-link" target="_blank">#9880</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema Precisamos adicionar o banner da black na dash da latam  ## Solução proposta adicionar o banner ## Como testar  - Subir o envie da Latam - Habilitar a feature SUPER_COUPON e S...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Retira validação de consistência de preços</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9876" class="pr-link" target="_blank">#9876</a>
+                    <div class="pr-date">merged: 2025-11-01</div>
+                    <div class="pr-description">## Descrição do problema Desconto do cupom na LATAM não está sendo aplicado no carrinho. ## Solução proposta Retirar a validação de consistência de preços no fluxo de cálculo do desconto, visto que no...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Altera período de matricula na declaração</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9785" class="pr-link" target="_blank">#9785</a>
+                    <div class="pr-date">merged: 2025-10-20</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">alterando escopo da variavel</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9721" class="pr-link" target="_blank">#9721</a>
+                    <div class="pr-date">merged: 2025-10-01</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Revert &quot;Revert &quot;Contador mes carreiras&quot;&quot;</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9689" class="pr-link" target="_blank">#9689</a>
+                    <div class="pr-date">merged: 2025-09-22</div>
+                    <div class="pr-description">Reverts caelum/springnarus#9688</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Revert &quot;Contador mes carreiras&quot;</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9688" class="pr-link" target="_blank">#9688</a>
+                    <div class="pr-date">merged: 2025-09-22</div>
+                    <div class="pr-description">Reverts caelum/springnarus#9591</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Banner Imersão IA</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9680" class="pr-link" target="_blank">#9680</a>
+                    <div class="pr-date">merged: 2025-09-18</div>
+                    <div class="pr-description">## Solução proposta Criar o banner da imersão IA ## Como testar  - Criar uma [imersão](http://localhost:8085/admin/immersion/create) com o código `imersao-ia-google-gemini-iii` e torná-la publica. - S...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Altera logica para exibir a quantidade de cursos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9656" class="pr-link" target="_blank">#9656</a>
+                    <div class="pr-date">merged: 2025-09-12</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Banner indica dev setembro</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9655" class="pr-link" target="_blank">#9655</a>
+                    <div class="pr-date">merged: 2025-09-15</div>
+                    <div class="pr-description">## Descrição do problema Precisamos colocar o banner do indica Dev para comunicação dos pontos em dobro em Setembro.  ## Solução proposta Criar o banner na Dashboard  ## Como testar Acessar a dashboar...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Fix: Vantagem das carreiras</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9652" class="pr-link" target="_blank">#9652</a>
+                    <div class="pr-date">merged: 2025-09-11</div>
+                    <div class="pr-description">## Descrição do problema Estamos mostrando a vantagem de carreiras para planos que nao tem full access ## Solução proposta validar se o produto tem essa feature ao adicionar a vantagem ## Como testar....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Mantendo cupom mas aplicando o desconto de superRenovacao</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9643" class="pr-link" target="_blank">#9643</a>
+                    <div class="pr-date">merged: 2025-09-10</div>
+                    <div class="pr-description">## Descrição do problema Agora, o pessoal de SX usa cupons fake para conseguirem rastrear de onde estão vindo as vendas. Quando entramos no /renovacao, o cupom passado via url é substituído pelo super...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">adiciona vantagem do número de carreiras no produto</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9622" class="pr-link" target="_blank">#9622</a>
+                    <div class="pr-date">merged: 2025-09-09</div>
+                    <div class="pr-description">## Descrição do problema Precisamos de uma vantagem que mostre a quantidade de carreiras na plataforma ## Solução proposta Criar essa vantagem baseada no número de carreiras publicadas ## Como testar....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] [MDC] Promoção Mês das Carreiras</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9599" class="pr-link" target="_blank">#9599</a>
+                    <div class="pr-date">merged: 2025-09-08</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Contador mes carreiras</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9591" class="pr-link" target="_blank">#9591</a>
+                    <div class="pr-date">merged: 2025-09-22</div>
+                    <div class="pr-description">## Descrição do problema Na última semana da promoção do mês das carreiras, precisamos mostrar o contador. ## Solução proposta Adaptar o contador para o que foi pedido ## Como testar  - Verificar se a...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] [MDC] Criando banners do fórum</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9554" class="pr-link" target="_blank">#9554</a>
+                    <div class="pr-date">merged: 2025-09-08</div>
+                    <div class="pr-description">## Descrição do problema com o mês das carreiras chegando, precisamos criar os banners do forum logado e deslogado ## Solução proposta Criar os banners do fórum logado e deslogado ## Como testar  - Ro...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Trial - Impossibilita a visualização dos certificados</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9547" class="pr-link" target="_blank">#9547</a>
+                    <div class="pr-date">merged: 2025-10-21</div>
+                    <div class="pr-description">## Descrição do problema Precisamos bloquear a visualização e download dos certificados para usuários Trial.  ## Solução proposta A solução para o problema foi:  - Criar uma nova flag no trial para qu...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Altera status da imersao python</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9524" class="pr-link" target="_blank">#9524</a>
+                    <div class="pr-date">merged: 2025-08-18</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Alterações no carrinho das subscriptions</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9493" class="pr-link" target="_blank">#9493</a>
+                    <div class="pr-date">merged: 2025-08-18</div>
+                    <div class="pr-description">## Descrição do problema Iremos ajustar o preço dos planos recorrentes atuais, aumentando a &quot;mensalidade&quot;, mas em contrapartida, deixando sem fidelidade, como uma assinatura mensal. Vamos usar o motor...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Altera lógica para exibir desconto no carrinho</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9379" class="pr-link" target="_blank">#9379</a>
+                    <div class="pr-date">merged: 2025-07-21</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Removendo a lógica de salvamento do cartão do usuário pós compra</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9358" class="pr-link" target="_blank">#9358</a>
+                    <div class="pr-date">merged: 2025-07-18</div>
+                    <div class="pr-description">## Descrição do problema Vamos alterar a lógica para salvar o cartão do usuário, por esse motivo estamos removendo essa lógica. Também resolve as exceptions de &quot;Failed to Deserialize Charge&quot; ## Soluçã...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">adiciona logs no salvamento do cartão pós compra</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9338" class="pr-link" target="_blank">#9338</a>
+                    <div class="pr-date">merged: 2025-07-16</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Fix: Vincula cartão ao usuário pós compra</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9330" class="pr-link" target="_blank">#9330</a>
+                    <div class="pr-date">merged: 2025-07-11</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Fix: Salvamento do cartão pós compra</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9327" class="pr-link" target="_blank">#9327</a>
+                    <div class="pr-date">merged: 2025-07-11</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Nova validação no campo Celular no carrinho</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9323" class="pr-link" target="_blank">#9323</a>
+                    <div class="pr-date">merged: 2025-07-15</div>
+                    <div class="pr-description">## Descrição do problema No PR passado, tínhamos o foco de voltar com a obrigatoriedade desse campo no carrinho aplicando uma validação mais simples somente bloqueando números iguais. Nesse novo PR, o...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adiciona validação e retorna com a obrigatoriedade do celular no carrinho</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9296" class="pr-link" target="_blank">#9296</a>
+                    <div class="pr-date">merged: 2025-07-10</div>
+                    <div class="pr-description">## Descrição do problema Precisamos voltar com o celular obrigatório pois a taxa de conversão é maior por esse meio comparado ao e-mail. ## Solução proposta Adicionar o campo como obrigatório no carri...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ajuste no formulário de migração de Acquirements</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9274" class="pr-link" target="_blank">#9274</a>
+                    <div class="pr-date">merged: 2025-06-27</div>
+                    <div class="pr-description">## Descrição do problema Não estavam sendo possíveis as migrações de Acquirement, pois como enviávamos para o form Strings contendo a data de expiração e início, o Spring não conseguia convertê-las pa...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão + B2B] Carrinho Turmas Abertas</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9235" class="pr-link" target="_blank">#9235</a>
+                    <div class="pr-date">merged: 2025-06-24</div>
+                    <div class="pr-description">## Descrição do problema Como gestor, quero comprar vagas dos cursos &#x27;turmas abertas&#x27; para colaboradores diretamente no self-checkout, sem depender do time de vendas.  Este carrinho será responsável p...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Imersão] Banner imersão DevOps com o Google</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9223" class="pr-link" target="_blank">#9223</a>
+                    <div class="pr-date">merged: 2025-06-13</div>
+                    <div class="pr-description">## Descrição do problema Precisamos adicionar o banner da imersão DevOps na dash ## Solução proposta Alterar o banner antigo para o novo estilo da imersão DevOps ## Como testar  - Alterar alguma [imer...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Novo estado da imersão</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9132" class="pr-link" target="_blank">#9132</a>
+                    <div class="pr-date">merged: 2025-06-16</div>
+                    <div class="pr-description">## Descrição do problema  Alunos não estavam conseguindo acesso à página da imersão depois que ela era alterada para restrita.  ## Solução proposta  Criar um novo status para a imersão, de modo que el...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Verificando datas para mostrar alert de certificado da imersão</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9090" class="pr-link" target="_blank">#9090</a>
+                    <div class="pr-date">merged: 2025-05-21</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://ww....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Alterando email de carrinho abandonado - Aniversário Alura</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9057" class="pr-link" target="_blank">#9057</a>
+                    <div class="pr-date">merged: 2025-05-14</div>
+                    <div class="pr-description">## Descrição do problema  ajustes email carrinho abandonado  ## Solução proposta  ## Como testar Seguir os passos deste pr -&gt; https://github.com/caelum/springnarus/pull/9049  ## Resultados  ----------...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Adiciona banner no fórum deslogado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9055" class="pr-link" target="_blank">#9055</a>
+                    <div class="pr-date">merged: 2025-05-15</div>
+                    <div class="pr-description">## Descrição do problema Precisamos adicionar o banner no fórum deslogado  ## Solução proposta Criação do banner  ## Como testar Ativar a feature SHOW_CTA_ITEMS_ON_FORUM_UNLOGGED e adicionar o código....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Criando as vantagens do produto Certificações</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9009" class="pr-link" target="_blank">#9009</a>
+                    <div class="pr-date">merged: 2025-05-05</div>
+                    <div class="pr-description">## Solução proposta Criação das vantagens do novo produto:  - Aulas 100% online e ao vivo, com no máximo 40 pessoas por turma - Conteúdos atualizados - Simulados e exercícios hands-on - Grupo exclusi....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Conversão] Renovação Automática</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8991" class="pr-link" target="_blank">#8991</a>
+                    <div class="pr-date">merged: 2025-05-12</div>
+                    <div class="pr-description">## Descrição do problema Vamos realizar um teste de renovação automática anual com aproximadamente 25 alunos com os planos PRO e PLUS, que realizaram suas compras no cartão de crédito em 12 vezes. O t...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Datas dinâmicas na criação dos links de assinatura</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8816" class="pr-link" target="_blank">#8816</a>
+                    <div class="pr-date">merged: 2025-04-08</div>
+                    <div class="pr-description">## Descrição do problema Houve um pedido do SX para aumentarmos o tempo de expiração dos links de assinatura.  ## Solução proposta Para dar mais autonomia a eles, decidimos liberar o campo &quot;Alterar da...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Altera o cálculo feito para cada execução do job de recorrência</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8799" class="pr-link" target="_blank">#8799</a>
+                    <div class="pr-date">merged: 2025-03-12</div>
+                    <div class="pr-description">## Descrição do problema Notamos que mesmo alterando o horário do job, ainda assim algumas cobranças estavam ficando sem serem executadas ## Solução proposta Alterar o cálculo para enviar mais payment...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Mostra alert e banner de renovação para ex-alunos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8774" class="pr-link" target="_blank">#8774</a>
+                    <div class="pr-date">merged: 2025-02-28</div>
+                    <div class="pr-description">## Descrição do problema Precisamos mostrar o banner de renovação e alert para o pessoal que é ex-aluno e também para alunos cancelados da recorrência. ## Solução proposta Alterar a query para que ess...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Esconde as datas quando a assinatura tem status Cancelada</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8699" class="pr-link" target="_blank">#8699</a>
+                    <div class="pr-date">merged: 2025-02-19</div>
+                    <div class="pr-description">## Descrição do problema Quando a assinatura está cancelada as datas de próximo pagamento e data de expiração são mostradas ao aluno(a). ## Solução proposta Esconder essas datas caso a assinatura este...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">alterando metodo de verificação dos itens da lista</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8662" class="pr-link" target="_blank">#8662</a>
+                    <div class="pr-date">merged: 2025-02-11</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Onboarding] Adicionando informações de escolaridade e ocupação ao admin</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8546" class="pr-link" target="_blank">#8546</a>
+                    <div class="pr-date">merged: 2025-02-26</div>
+                    <div class="pr-description">## Descrição do problema Como primeira parte da missão Onboarding, vamos levar para o admin informações a respeito de escolaridade e ocupação atual, pois a ideia é que a seguir essas informações sejam...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">gesleyelois</div>
+                <div class="pr-count">24 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">fix(PaymentDiscountService): aplica sempre o melhor desconto para o usuário</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10011" class="pr-link" target="_blank">#10011</a>
+                    <div class="pr-date">merged: 2025-11-27</div>
+                    <div class="pr-description">## Descrição do problema  Na página do carrinho, os valores estavam corretos de acordo com o supercupom da Black Friday, mas quando era criada a Session na Malga, o componente de pagamento com cartão....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">feat: integração do HubSpot com campo portalId</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9825" class="pr-link" target="_blank">#9825</a>
+                    <div class="pr-date">merged: 2025-10-27</div>
+                    <div class="pr-description">## Descrição do problema  Necessidade de integrar o HubSpot nas páginas de pagamento com suporte a diferentes portais (Alura/Sandbox) através de um campo portalId configurável.  ## Solução proposta  -...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ajustes na tela de minha matrícula e checkout</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9723" class="pr-link" target="_blank">#9723</a>
+                    <div class="pr-date">merged: 2025-10-01</div>
+                    <div class="pr-description">## Descrição do problema  As telas de checkout e minha matrícula estavam utilizando lógica complexa para calcular e exibir valores economizados com cupons de desconto. Além disso, as porcentagens de d...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">feat: adiciona validação de seções ativas para controle de acesso de cursos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9592" class="pr-link" target="_blank">#9592</a>
+                    <div class="pr-date">merged: 2025-09-08</div>
+                    <div class="pr-description">## Descrição do problema  Cursos sem seções ativas estavam sendo exibidos e permitindo acesso aos usuários, mesmo não tendo conteúdo disponível. Isso causava uma experiência ruim para o usuário, que p...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Talent Lab] Envio de novos campos na API de criação de estudante na Symplicity</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9508" class="pr-link" target="_blank">#9508</a>
+                    <div class="pr-date">merged: 2025-08-15</div>
+                    <div class="pr-description">## Descrição do problema A integração com a API Symplicity necessitava de campos adicionais para atender aos requisitos da plataforma, e o código existente precisava ser refatorado para melhor organiz...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Talent Lab] CSM API - Symplicity</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9457" class="pr-link" target="_blank">#9457</a>
+                    <div class="pr-date">merged: 2025-08-06</div>
+                    <div class="pr-description">## Descrição do problema  Foi necessário implementar a integração com o sistema CSM da Symplicity para o Talent Lab, permitindo que estudantes sejam automaticamente sincronizados quando adquirem produ...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ultra Lab - Final</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9451" class="pr-link" target="_blank">#9451</a>
+                    <div class="pr-date">merged: 2025-08-04</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[FIX] Página &quot;Mi registro&quot; não carrega para alunos B2C – Latam</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9343" class="pr-link" target="_blank">#9343</a>
+                    <div class="pr-date">merged: 2025-07-17</div>
+                    <div class="pr-description">## Descrição do problema Ao acessar a página de &quot;Minhas compras&quot; na Alura Latam, os usuários não conseguiam visualizar seus acquirements e não conseguiam acessar as outras abas, pois era gerado o segu...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Curso Imersivo] API FIAP: retorna a licença mais recente do curso imersivo do aluno</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9264" class="pr-link" target="_blank">#9264</a>
+                    <div class="pr-date">merged: 2025-06-25</div>
+                    <div class="pr-description">## Descrição do problema Estamos retornando todas as licenças de curso imersivo dos alunos por turma, porém tem alguns casos que o aluno comprou duas vezes e precisou cancelar uma licença. Sendo assim...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Altera a data de expiração do cupom para a última hora do dia</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9103" class="pr-link" target="_blank">#9103</a>
+                    <div class="pr-date">merged: 2025-05-22</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Remove os testes criados para não exibir as vantagens dos cursos imersivos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9050" class="pr-link" target="_blank">#9050</a>
+                    <div class="pr-date">merged: 2025-05-13</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[FIX] Aplicar regra de cupom exclusivo somente se o super cupom estiver desligado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9047" class="pr-link" target="_blank">#9047</a>
+                    <div class="pr-date">merged: 2025-05-13</div>
+                    <div class="pr-description">## Descrição do problema Após habilitar o super cupom de aniversário da Alura (`aniveralura`), todos os links de compra dos cursos imersivos estão redirecionando para o plano PLUS.  Parte 1: https://g...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[FIX] Corrige o redirecionamento quando o super cupom está habilitado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9046" class="pr-link" target="_blank">#9046</a>
+                    <div class="pr-date">merged: 2025-05-13</div>
+                    <div class="pr-description">## Descrição do problema Após habilitar o super cupom de aniversário da Alura (`aniveralura`), todos os links de compra dos cursos imersivos estão redirecionando para o plano PLUS.  Link do card: http...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[DEV] Matricular o usuário no curso imersivo</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9044" class="pr-link" target="_blank">#9044</a>
+                    <div class="pr-date">merged: 2025-05-12</div>
+                    <div class="pr-description">## Descrição do problema   Estamos oferecendo outros meios de pagamento dos cursos imersivos para alguns alunos, fora do nosso carrinho. Consequentemente, não conseguimos fazer a matrícula do aluno no...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Banners Aniversário Alura</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9043" class="pr-link" target="_blank">#9043</a>
+                    <div class="pr-date">merged: 2025-05-12</div>
+                    <div class="pr-description">## Descrição do problema PRs: - https://github.com/caelum/springnarus/pull/9033 - https://github.com/caelum/springnarus/pull/9037  ----------------------------  Se precisar relembrar o que focar na re...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[FIX] Lógica de parcelamento e testes</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9039" class="pr-link" target="_blank">#9039</a>
+                    <div class="pr-date">merged: 2025-05-12</div>
+                    <div class="pr-description">## Descrição do problema - Corrigi lógica de parcelamento - Adiciona testes  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Alterações para a campanha aniversário Alura</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9038" class="pr-link" target="_blank">#9038</a>
+                    <div class="pr-date">merged: 2025-05-12</div>
+                    <div class="pr-description">## Descrição do problema PRs: - https://github.com/caelum/springnarus/pull/9022 - https://github.com/caelum/springnarus/pull/8987 - https://github.com/caelum/springnarus/pull/9017  E, alguns ajustes f...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[FIX] Correção na lógica de extração da nova versão do `session_id` no cookie do GA4</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9032" class="pr-link" target="_blank">#9032</a>
+                    <div class="pr-date">merged: 2025-05-09</div>
+                    <div class="pr-description">## Descrição do problema  O valor do cookie do Google Analytics 4 (`_ga_&lt;measurement_id&gt;`) passou a adotar múltiplos formatos, incluindo:  - Versão 1 com delimitadores por ponto (`.`). - Versão 2, o `...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Curso Imersivo] Ajusta data de expiração e altera o curso imersivo do usuário</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8981" class="pr-link" target="_blank">#8981</a>
+                    <div class="pr-date">merged: 2025-04-28</div>
+                    <div class="pr-description">## Descrição do problema - Foi necessário alterar o período de duração do produto de curso imersivo. Consequentemente, precisamos ajustar a data de expiração dos usuários que já estavam matriculados.....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Atualiza lista de Stars do Indica Dev</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8895" class="pr-link" target="_blank">#8895</a>
+                    <div class="pr-date">merged: 2025-04-07</div>
+                    <div class="pr-description">## Proposta de melhoria Atualizar a lista de Stars via ADMIN -&gt; https://app.clickup.com/t/86a7pbbqg  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[API - Cursos Imersivos] Retornar 404 caso não encontre o código da turma</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8881" class="pr-link" target="_blank">#8881</a>
+                    <div class="pr-date">merged: 2025-03-31</div>
+                    <div class="pr-description">## Descrição do problema Atualmente, o retorno 200 sem dados vai dificultar identificar erros, como digitação no cadastro, pois não há feedback claro sobre a validade do código — time FIAP.  ## Soluçã...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[FIX] Migrate subscription</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8695" class="pr-link" target="_blank">#8695</a>
+                    <div class="pr-date">merged: 2025-02-18</div>
+                    <div class="pr-description">## Descrição do problema Alterando também a licença na migração da assinatura.</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Cursos imersivos detalhes da compra</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8673" class="pr-link" target="_blank">#8673</a>
+                    <div class="pr-date">merged: 2025-02-12</div>
+                    <div class="pr-description">## Descrição do problema - Não está exibindo a informação do curso imersivo no carrinho. - Está aparecendo a opção para pagar com 2 cartões no carrinho, porém não possível criar uma matrícula no curso...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Corrigindo o formulário de cupom</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8570" class="pr-link" target="_blank">#8570</a>
+                    <div class="pr-date">merged: 2025-01-30</div>
+                    <div class="pr-description">## Descrição do problema Não está conseguindo converter uma `String` (dd/MM/yyyy) para um `LocalDateTime`.  ``` Field error in object &#x27;couponForm&#x27; on field &#x27;expirationDate&#x27;: rejected value [24/01/2025...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">italomded</div>
+                <div class="pr-count">3 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">Correção ao salvar categoria de interesse do usuário dentro do fluxo de onboarding</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10004" class="pr-link" target="_blank">#10004</a>
+                    <div class="pr-date">merged: 2025-12-02</div>
+                    <div class="pr-description">## Descrição do problema  Task sem CARD.  Novos `User` que passam pelo fluxo de onboarding, quando respondem a sua área/categoria de interesse (`Category`), não estão tendo essa `Category` salva na ba...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adição de no-index ao realizar login na PM3</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9875" class="pr-link" target="_blank">#9875</a>
+                    <div class="pr-date">merged: 2025-11-03</div>
+                    <div class="pr-description">Feito com o @Caio015   ## Descrição do problema  A página de login  da plataforma da PM3 (nossa instância) está indexando no Google. Ao buscar &quot;login PM3&quot; no google, esse link aparece como primeiro re...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adição de banner Imersão Dev Google</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9860" class="pr-link" target="_blank">#9860</a>
+                    <div class="pr-date">merged: 2025-11-03</div>
+                    <div class="pr-description">## Descrição do problema  Foi solicitado a adição do banner para encaminhar para o [link](https://cursos.alura.com.br/imersao/imersao-dev-google).  ## Solução proposta  Adição do banner conforme desig...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">jeniblodev</div>
+                <div class="pr-count">29 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">[ULTIMO DEPLY DO ANO] Ajustes das copys do carrinha abandonado</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10030" class="pr-link" target="_blank">#10030</a>
+                    <div class="pr-date">merged: 2025-12-02</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Precisamos criar os arquivos e ajustar os copys dos emails de carrinho abandonado pra campanha **Último Deploy do Ano**.  ## Solução proposta Copys ajustados de....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[ALURA LATAM] Atualização dos contatos no e-mail automático de acesso</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10013" class="pr-link" target="_blank">#10013</a>
+                    <div class="pr-date">merged: 2025-11-28</div>
+                    <div class="pr-description">## Descrição do problema Oi Pessoal! 🌻 Precisamos alterar os contatos presentes no email automático de novos usuários para o contato novo informado [nesse card.](https://app.clickup.com/t/86adeqbpn).....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">fix: Corrige envio de lista de eventos vazia no SymplicityService</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9973" class="pr-link" target="_blank">#9973</a>
+                    <div class="pr-date">merged: 2025-11-19</div>
+                    <div class="pr-description">## Descrição do problema Oi Pessoal! 🌻 Esse PR corrige [essa exception](https://gnarus.sentry.io/issues/7017619316/?project=221835&amp;referrer=slack) que foi reportada no Teams e está ocorrendo ao tentar...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[INDICA DEV] Liberação do indica dev pra Alun - Fiap</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9949" class="pr-link" target="_blank">#9949</a>
+                    <div class="pr-date">merged: 2025-11-14</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Recebemos [essa solicitação](https://app.clickup.com/t/86ad11n52) de expandir o acesso ao Indica Dev para que os demais colaboradores do grupo Alun tenham acesso...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Correção do número do whatsapp no checkout</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9911" class="pr-link" target="_blank">#9911</a>
+                    <div class="pr-date">merged: 2025-11-07</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Recebemos [essa solicitação](https://app.clickup.com/t/86ad39jza) para atualizar o numero do whatsapp no checkout para o novo número de vendas.  ## Solução propo...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[INDICA DEV] Corrige usos do cupom &quot;indica-dev&quot; sem registro de user indicador</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9889" class="pr-link" target="_blank">#9889</a>
+                    <div class="pr-date">merged: 2025-11-07</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Foi reportado [nesse card](https://app.clickup.com/t/86a70ypkh) algumas situações em que o `indicator_id` do cupom `indica-dev` não estava sendo registrado, gera...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[HUBSPOT - MIGRAÇÃO LATAM] Criando propriedade ALUNO_LATAM</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9878" class="pr-link" target="_blank">#9878</a>
+                    <div class="pr-date">merged: 2025-11-02</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 O time de SX da Latam trouxe um problema que estavam tendo em relação às comunicações com os alunos, principalmente os que contrataram Plus e Pro. Como esses pla...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Trava de segurança para descontos na página de cupom</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9812" class="pr-link" target="_blank">#9812</a>
+                    <div class="pr-date">merged: 2025-11-01</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 A página de criação/edição de cupom apresentava algumas vulnerabilidades que permitiam criar cupons com valores fora das regras possíveis, esse PR tem como objet...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">feat: alteração da vantagem de quantidade de cursos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9739" class="pr-link" target="_blank">#9739</a>
+                    <div class="pr-date">merged: 2025-10-03</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">feat: hubspot api key env</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9734" class="pr-link" target="_blank">#9734</a>
+                    <div class="pr-date">merged: 2025-10-03</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">fix: correção dos paths do userPaymentsInterceptor</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9630" class="pr-link" target="_blank">#9630</a>
+                    <div class="pr-date">merged: 2025-09-09</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻  Estávamos com um problema relacionado às requisições feitas pro redis que foi reportado com mais detalhes [aqui](https://discordapp.com/channels/699344837396267...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[HubSpot] Configuração do ambiente para Alura Latam</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9545" class="pr-link" target="_blank">#9545</a>
+                    <div class="pr-date">merged: 2025-09-30</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Precisamos configurar o ambiente no hubspot para receber os contatos da Alura Latam, assim como já fazemos na Alura.  Com a configuração que temos atualmente, já...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Fix: aba de plano atual ainda exibindo o plano Ultra como opção de renovação</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9517" class="pr-link" target="_blank">#9517</a>
+                    <div class="pr-date">merged: 2025-08-18</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Depois da inclusão do plano Ultra Lab, ainda estávamos exibindo o plano Ultra na aba &quot;Plano atual&quot; dentro da &quot;Minha matrícula&quot;, e esse PR é pra corrigir isso.  #...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Correção do checkout em caso de ser renovação e ter cupom de desconto</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9503" class="pr-link" target="_blank">#9503</a>
+                    <div class="pr-date">merged: 2025-08-13</div>
+                    <div class="pr-description">## Descrição do problema Oi time!  O SX reportou que não estava sendo aplicado o cupom de desconto no checkout de renovação quando o usuário já estava logado.  ## Solução proposta Aficionar na url do....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[ULTRA LAB] Ajustes no botão do Talent Lab no menu</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9459" class="pr-link" target="_blank">#9459</a>
+                    <div class="pr-date">merged: 2025-08-06</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Banner Imersão] Ajuste de url de redirecionamento</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9455" class="pr-link" target="_blank">#9455</a>
+                    <div class="pr-date">merged: 2025-08-05</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Foi solicitado pelo marketing a alteração da url de redirecionamento do banner da imersão.  ## Solução proposta Alteração da url para esta: https://cursos.alura....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[MGM] Inclusão de campo código de desconto com pontuação diferente no admin</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9259" class="pr-link" target="_blank">#9259</a>
+                    <div class="pr-date">merged: 2025-06-27</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Foi reportado pra gente [nesse card](https://app.clickup.com/t/86a95jaj1) que alguns estudantes não receberam a pontuação de indicação corretamente durante a cam...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Cursos Imersivos] Criação de banner para campanha de desconto dos cursos imersivos</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9119" class="pr-link" target="_blank">#9119</a>
+                    <div class="pr-date">merged: 2025-05-26</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Precisamos criar um banner para a dashboard e pro fórum logado para o desconto dos cursos imersivos que irá se manter depois da campanha de aniversário da Alura....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Aniversário Alura] Banner de cursos imersivos para a campanha de aniversário</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9099" class="pr-link" target="_blank">#9099</a>
+                    <div class="pr-date">merged: 2025-05-22</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Precisamos criar um banner para a dashboard para o desconto dos cursos imersivos durante a campanha de aniversário da Alura.  ## Solução proposta Fazer o banner....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Aniversário Alura] Banner de renovação para os últimos dias de campanha</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9093" class="pr-link" target="_blank">#9093</a>
+                    <div class="pr-date">merged: 2025-05-23</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻  Precisamos criar um banner para a prorrogação da campanha de aniversário da Alura que vai ocorrer nos dias 24 e 25/05.  ## Solução proposta Criar o banner confo...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Aniversário Alura] Ajustes de validação do super cupom da campanha de aniversário</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9022" class="pr-link" target="_blank">#9022</a>
+                    <div class="pr-date">merged: 2025-05-12</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻  Esse PR tem como objetivo ajustar as validações no código para identificar o cupons de aniversário  da Alura de compra e renovação e alterar os itens necessário...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Imersão Dev] Banner da Imersão Dev na dash e no fórum</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8842" class="pr-link" target="_blank">#8842</a>
+                    <div class="pr-date">merged: 2025-03-25</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! 🌻 Vai rolar uma nova imersão no fim do mês e temos que subir dois banners: uma pra dash pros inscritos na imersão e outro pro fórum deslogado.  Mais detalhes [aqui...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Luri Busca] Ajuste de acessibilidade na resposta da conversa</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8834" class="pr-link" target="_blank">#8834</a>
+                    <div class="pr-date">merged: 2025-04-03</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal!  No chat de busca da Luri as mensagens enviadas no chat não estavam acessíveis aos leitores de tela.  ## Solução proposta Adicionar as propriedades de acessibilida...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ajustes do email de carrinho abandonado - campanha Carnatech</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8765" class="pr-link" target="_blank">#8765</a>
+                    <div class="pr-date">merged: 2025-02-27</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! Esse pr corrige o problema de email de carrinho abandonado que tivemos ao fazer [o deploy](https://github.com/caelum/springnarus/commit/bdab1fd5ecb9dd6b59e74077013...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Correção dos dados de atividades concluídas e totais nos certificados</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8760" class="pr-link" target="_blank">#8760</a>
+                    <div class="pr-date">merged: 2025-02-28</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! =) Tivemos alguns casos reportados por alunos em que os dados de atividades no verso dos certificados estavam incorretos, muitas vezes apontando mais atividades re...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Carnatech SX MKT] Criação de banner e cupom carnatech-renova para estudantes em renovação</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8739" class="pr-link" target="_blank">#8739</a>
+                    <div class="pr-date">merged: 2025-02-27</div>
+                    <div class="pr-description">## Descrição do problema Oi pessoal! Foi solicitada a criação de um banner, com base no figma enviado, para a campanha do carnatech que estivesse disponível apenas para estudantes em período de renova...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[ONE] Facilitando a Localização de Cursos Liberados no Dashboard</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8522" class="pr-link" target="_blank">#8522</a>
+                    <div class="pr-date">merged: 2025-02-07</div>
+                    <div class="pr-description">## Descrição do problema  Os estudantes do produto ONE estavam se deparando com uma página de &quot;Nenhum conteúdo encontrado&quot; ao acessar a página de todos os cursos, pois estavam sendo direcionados autom...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ajustes na página da Imersão na área logada</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8398" class="pr-link" target="_blank">#8398</a>
+                    <div class="pr-date">merged: 2025-01-03</div>
+                    <div class="pr-description">## Descrição do problema Foram solicitadas as seguintes alterações com relação ao termo de responsabilidade da página da imersão na área logada: * Alteração do texto do aceite para: &quot;Entendo que os me...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adicionar frase no email de boas-vindas plano Ultra</div>
+                    <a href="https://github.com/caelum/springnarus/pull/8396" class="pr-link" target="_blank">#8396</a>
+                    <div class="pr-date">merged: 2025-01-07</div>
+                    <div class="pr-description">## Descrição do problema Alunos estão com dúvida quanto ao prazo de liberação de acesso dos eBooks que são disponibilizados junto ao plano Ultra.  ## Solução proposta Adicionar a frase **&quot;Lembrando qu...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">joaovictorsl</div>
+                <div class="pr-count">26 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">Adiciona endpoint para normalização de payments associados com mais de um acquirement</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10047" class="pr-link" target="_blank">#10047</a>
+                    <div class="pr-date">merged: 2025-12-09</div>
+                    <div class="pr-description">## Descrição do problema  Alguns Acquirements B2C estão compartilhando entre si o mesmo BMPayment.  ## Solução proposta  Criar endpoint capaz de receber uma lista de ids e normalizar essa relação.   #...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Adiciona Ultra Lab 36 na Symplicity</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9998" class="pr-link" target="_blank">#9998</a>
+                    <div class="pr-date">merged: 2025-11-26</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Adiciona migration para alterar expirationDates de Acquirement e BMPayment</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9984" class="pr-link" target="_blank">#9984</a>
+                    <div class="pr-date">merged: 2025-12-09</div>
+                    <div class="pr-description">## Descrição do problema  Tem algumas licenças do B2C que foram expiradas por falta de pagamento e estão com o status EXPIRED, mas a coluna expirationDate não foi atualizada nas tabelas Acquirement e....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Adiciona criação de estudante na Symplicity em renovação manual</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9966" class="pr-link" target="_blank">#9966</a>
+                    <div class="pr-date">merged: 2025-11-17</div>
+                    <div class="pr-description">## Descrição do problema  Precisamos sincronizar a criação/renovação de estudantes na Symplicity com o fluxo de renovação manual no admin.   ## Solução proposta  Adicionar chamada ao serviço da Sympli...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Implementa job responsável por liberar o acesso na Symplicity</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9951" class="pr-link" target="_blank">#9951</a>
+                    <div class="pr-date">merged: 2025-11-24</div>
+                    <div class="pr-description">## Descrição do problema  É necessário criar um job para liberar o acesso de estudantes na plataforma da Symplicity em casos que a liberação não é feita de imediato, por exemplo: liberação manual com....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Altera data default do job de expiração para ontem</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9934" class="pr-link" target="_blank">#9934</a>
+                    <div class="pr-date">merged: 2025-11-12</div>
+                    <div class="pr-description">## Descrição do problema  A Symplicity só deve ser expirada um dia após a data de expiração do Acquirement, atualmente o job expira no último dia do Acquirement ao invés de um dia após.  ## Solução pr...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Corrige quantidade de mentorias para planos talent lab</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9888" class="pr-link" target="_blank">#9888</a>
+                    <div class="pr-date">merged: 2025-11-12</div>
+                    <div class="pr-description">## Descrição do problema  Estávamos sempre adicionando duas mentorias independentemente se o plano era para 1 ou 2 anos. No caso do plano de 2 anos precisamos adicionar 4 mentorias.  ## Solução propos...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Atualiza/Cria estudantes na Symplicity em casos de liberação de matrícula para um ou mais clientes</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9858" class="pr-link" target="_blank">#9858</a>
+                    <div class="pr-date">merged: 2025-11-10</div>
+                    <div class="pr-description">## Descrição do problema  Precisamos realizar update ou criação de usuários na Symplicity quando é feita a liberação de matrícula para mais de um cliente de uma vez.  ## Solução proposta  1. Produzir....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">hotfix: remove chamada dupla para sentryConsumer.send</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9844" class="pr-link" target="_blank">#9844</a>
+                    <div class="pr-date">merged: 2025-10-28</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Hotfix: remove campos não necessários do record SymplicityStudentResp…</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9842" class="pr-link" target="_blank">#9842</a>
+                    <div class="pr-date">merged: 2025-10-28</div>
+                    <div class="pr-description">## Descrição do problema  ## Solução proposta  ## Como testar  ## Resultados  ----------------------------  Se precisar relembrar o que focar na revisão, acesse [Guia de revisão de código](https://www...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Job para expirar estudantes na Symplicity</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9808" class="pr-link" target="_blank">#9808</a>
+                    <div class="pr-date">merged: 2025-11-11</div>
+                    <div class="pr-description">## Descrição do problema  Precisamos implementar um job para realizar a expiração do Talent Lab para alunos na plataforma da Symplicity.  ## Solução proposta  1. Produzir eventos que representam os es...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Atualiza estudante na Symplicity em casos de renovação</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9797" class="pr-link" target="_blank">#9797</a>
+                    <div class="pr-date">merged: 2025-11-06</div>
+                    <div class="pr-description">## Descrição do problema  Precisamos implementar um método de UPDATE em nossa integração com a Symplicity para garantirmos que conseguiremos atualizar os status de alunos em casos de renovação de plan...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Sincroniza update de emails com a Symplicity</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9769" class="pr-link" target="_blank">#9769</a>
+                    <div class="pr-date">merged: 2025-10-28</div>
+                    <div class="pr-description">## Descrição do problema  Temos que sincronizar as alterações em emails da Alura desde que utilizamos o email como id interno na Symplicity. Isso inclui casos de update e migração.  ## Solução propost...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] criação de método UPDATE para API de integração com a Simplicity</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9718" class="pr-link" target="_blank">#9718</a>
+                    <div class="pr-date">merged: 2025-10-27</div>
+                    <div class="pr-description">## Descrição do problema  Precisamos implementar métodos de UPDATE em nossa integração com a Symplicity para garantirmos que conseguiremos atualizar os status de alunos ao longo da sua jornada com a g...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[TALENT LAB] Inclusão de casos de vendas na API de integração com a Symplicity</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9703" class="pr-link" target="_blank">#9703</a>
+                    <div class="pr-date">merged: 2025-10-02</div>
+                    <div class="pr-description">## Descrição do problema  Precisamos garantir a sincronização dos alunos do Talent Lab na Symplicity ao realizar a compra do Ultra Lab, na primeira versão dessa integração os seguintes casos de venda....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Remove alertas em página de payment para planos 24 meses</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9686" class="pr-link" target="_blank">#9686</a>
+                    <div class="pr-date">merged: 2025-09-19</div>
+                    <div class="pr-description">## Descrição do problema  O valor exibido no alerta difere do valor do produto em casos de invoice.  ## Solução proposta  Remover os alertas  ## Como testar  1. Crie duas novas solicitações de pagamen...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Stape update custom loader</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9675" class="pr-link" target="_blank">#9675</a>
+                    <div class="pr-date">merged: 2025-09-18</div>
+                    <div class="pr-description">## Descrição do problema  O time do Stape nos notificou sobre diversos erros 404 que estavam sendo gerados devido a um custom loader desatualizado.  ## Solução proposta  - Atualizar o custom loader -....</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">fix: não apresentar alerta de lançamento do ultra lab em invoice</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9667" class="pr-link" target="_blank">#9667</a>
+                    <div class="pr-date">merged: 2025-09-16</div>
+                    <div class="pr-description">## Descrição do problema  O alerta de lançamento do ultra lab está aparecendo em link de invoice trazendo uma informação de desconto de lançamento que não está mais ativo.  ## Solução proposta  Não re...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Latam ajuste forms checkout</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9665" class="pr-link" target="_blank">#9665</a>
+                    <div class="pr-date">merged: 2025-09-16</div>
+                    <div class="pr-description">## Descrição do problema  Foi solicitado a adição de um campo para telefone no checkout da LATAM  ## Solução proposta  Adicionar um campo de telefone  ## Como testar  1. Acesse a página de [compra](ht...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ajuste formulário trial</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9640" class="pr-link" target="_blank">#9640</a>
+                    <div class="pr-date">merged: 2025-09-12</div>
+                    <div class="pr-description">## Descrição do problema  Foi solicitado a adição do campo de telefone no forms de trial da alura latam.   ## Solução proposta  Adicionar o campo para inserção de telefone considerando os diferentes p...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Fix mostrar banner ultra lab apenas na alura</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9530" class="pr-link" target="_blank">#9530</a>
+                    <div class="pr-date">merged: 2025-08-21</div>
+                    <div class="pr-description">## Descrição do problema  O suporte disse que alguns alunos na aluraespanhol avisaram que o banner do ultra lab estava com os preços em reais e redirecionando para o site brasileiro. Nesse momento o b...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[LATAM] Plano AI Boost</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9529" class="pr-link" target="_blank">#9529</a>
+                    <div class="pr-date">merged: 2025-09-04</div>
+                    <div class="pr-description">## Descrição do problema  Foi solicitado a criação do Plano AI Boost na Alura Latam, ele terá acesso só a categoria de Inteliência Artificial e por tempo de 6 meses.   O plano deve conter os itens a s...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Alura Cases] Banner</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9499" class="pr-link" target="_blank">#9499</a>
+                    <div class="pr-date">merged: 2025-08-27</div>
+                    <div class="pr-description">## Descrição do problema Foi solicitada a criação de um banner para o Alura Cases para ser apresentado na área logada para os alunos inscritos.  ## Solução proposta Criar um novo banner para o Alura C...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Imersão] Banner imersão agentes de IA</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9486" class="pr-link" target="_blank">#9486</a>
+                    <div class="pr-date">merged: 2025-08-15</div>
+                    <div class="pr-description">## Descrição do problema Foi solicitada a criação de um banner para a imersão agentes de IA para ser apresentado na área logada para os alunos inscritos. ## Solução proposta Alterar o banner antigo pa...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Altera retorno de no content para list vazia no endpoint de formações e carreiras</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9479" class="pr-link" target="_blank">#9479</a>
+                    <div class="pr-date">merged: 2025-08-11</div>
+                    <div class="pr-description">## Descrição do problema  A criação de uma nova categoria sem uma formação ou carreira pelo admin da plataforma faz com que o site da alura espanhol quebre como podemos ver na imagem abaixo. Isso acon...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">[Imersão] Banner imersão dados python</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9426" class="pr-link" target="_blank">#9426</a>
+                    <div class="pr-date">merged: 2025-08-04</div>
+                    <div class="pr-description">## Descrição do problema Foi solicitada a criação de um banner para a imersão dados python para ser apresentado na área logada para os alunos inscritos. ## Solução proposta Alterar o banner antigo par...</div>
+                </div>
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">oelsonlima</div>
+                <div class="pr-count">0 PRs</div>
+            </div>
+            <div class="no-prs">
+                Nenhum PR encontrado no período.
+            </div>
+        </div>
+        <div class="author-section">
+            <div class="author-header">
+                <div class="author-name">thiago-enjo</div>
+                <div class="pr-count">2 PRs</div>
+            </div>
+            <div class="prs-grid">
+                <div class="pr-card">
+                    <div class="pr-title">Evict automático do cache de vantagens ao atualizar produto</div>
+                    <a href="https://github.com/caelum/springnarus/pull/10017" class="pr-link" target="_blank">#10017</a>
+                    <div class="pr-date">merged: 2025-11-28</div>
+                    <div class="pr-description">## Descrição do problema  Ao alterar um produto (ex.: tempo de licença ou qualquer atributo relacionado a planos), o produto é atualizado, mas as vantagens exibidas na página pública permaneciam desat...</div>
+                </div>
+                <div class="pr-card">
+                    <div class="pr-title">Ajusta recuperação do onboardingUrl e corrige migration inicial</div>
+                    <a href="https://github.com/caelum/springnarus/pull/9987" class="pr-link" target="_blank">#9987</a>
+                    <div class="pr-date">merged: 2025-11-27</div>
+                    <div class="pr-description">## Descrição do problema  Atualmente, o link do vídeo de onboarding exibido na tela de boas-vindas `/onboarding/welcome` está definido diretamente no `application-alura.properties` e `application-alur...</div>
+                </div>
+            </div>
+        </div>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number">11</div>
+                <div class="stat-label">Autores</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">258</div>
+                <div class="stat-label">Total de PRs</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
