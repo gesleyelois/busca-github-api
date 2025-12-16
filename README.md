@@ -72,7 +72,7 @@ Para publicar o HTML no GitHub Pages:
 
 1. Faça commit do arquivo `docs/index.html`:
 ```bash
-git add docs/index.html
+git add docs/index.html docs/.nojekyll
 git commit -m "Atualiza relatório de PRs"
 git push
 ```
@@ -80,9 +80,14 @@ git push
 2. Configure o GitHub Pages no repositório:
    - Vá em Settings > Pages
    - Source: Deploy from a branch
-   - Branch: `main` / `docs`
+   - Branch: `main` 
+   - Folder: `/docs`
 
-3. Acesse: `https://seu-usuario.github.io/busca-github-api/`
+3. Aguarde alguns minutos para o GitHub processar
+
+4. Acesse: `https://seu-usuario.github.io/busca-github-api/`
+
+**Nota:** O arquivo `docs/.nojekyll` garante que o GitHub Pages não processe o HTML como Jekyll.
 
 ## Exemplo de Saída
 
