@@ -122,6 +122,8 @@ jobs:
       
       - name: Configurar Pages
         uses: actions/configure-pages@v4
+        with:
+          enablement: true
       
       - name: Fazer upload do artifact
         uses: actions/upload-pages-artifact@v3
