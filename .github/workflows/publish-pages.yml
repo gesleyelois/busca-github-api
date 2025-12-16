@@ -74,19 +74,25 @@ jobs:
           # Cria diretório docs se não existir
           mkdir -p docs
           
-          # Gera HTML diretamente
-          python busca_prs_time.py \
-            --repositorio "$REPOSITORIO" \
-            --data-inicio "$DATA_INICIO" \
-            --data-fim "$DATA_FIM" \
-            --branch-base "$BRANCH_BASE" \
-            --gerar-html \
-            --arquivo-html docs/index.html || true
-          
-          # Se não gerou HTML, cria página de exemplo
-          if [ ! -f docs/index.html ]; then
-            echo "⚠️ HTML não foi gerado. Criando página de exemplo."
-            cat > docs/index.html << 'EOF'
+          # Verifica se já existe um HTML com dados (mais de 5000 caracteres indica que tem conteúdo)
+          if [ -f docs/index.html ] && [ $(wc -c < docs/index.html) -gt 5000 ]; then
+            echo "✅ HTML existente encontrado com dados. Mantendo o arquivo atual."
+            echo "   Para regenerar, remova o arquivo docs/index.html antes de executar o workflow."
+          else
+            echo "🔄 Gerando novo HTML..."
+            # Gera HTML diretamente
+            python busca_prs_time.py \
+              --repositorio "$REPOSITORIO" \
+              --data-inicio "$DATA_INICIO" \
+              --data-fim "$DATA_FIM" \
+              --branch-base "$BRANCH_BASE" \
+              --gerar-html \
+              --arquivo-html docs/index.html || true
+            
+            # Se não gerou HTML, cria página de exemplo
+            if [ ! -f docs/index.html ]; then
+              echo "⚠️ HTML não foi gerado. Criando página de exemplo."
+              cat > docs/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="pt-BR">
           <head>
@@ -121,6 +127,7 @@ jobs:
           </body>
           </html>
           EOF
+            fi
           fi
       
       - name: Configurar Pages
