@@ -1,2 +1,0 @@
-"""Implementações de infraestrutura."""
-
